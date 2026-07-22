@@ -33,6 +33,37 @@ import Pagination from "./Pagination";
 import { normalizeAddress, getSimilarity, getInitialsSvg } from "../utils/addressEngine";
 import { supabase, isSupabaseConfigured } from "../supabaseClient";
 
+const sanitizeResidentInsurance = (healthCardRaw?: string, gtDenRaw?: string) => {
+  let healthInsuranceCard = (healthCardRaw || "").trim();
+  let gtDen = (gtDenRaw || "").trim();
+
+  const isBHYTCode = (str: string) => {
+    if (!str) return false;
+    const clean = str.toUpperCase().trim();
+    return /^[A-Z]{2}\d{8,}/.test(clean) || (clean.length >= 9 && !clean.includes("THƯỜNG TRÚ") && !clean.includes("TẠM TRÚ") && !clean.includes("TẠM VẮNG") && /^[A-Z0-9]+$/i.test(clean));
+  };
+
+  const isResidencyStatus = (str: string) => {
+    if (!str) return false;
+    const clean = str.toLowerCase().trim();
+    return clean.includes("thường trú") || clean.includes("tạm trú") || clean.includes("tạm vắng");
+  };
+
+  if (isResidencyStatus(healthInsuranceCard)) {
+    if (isBHYTCode(gtDen)) {
+      healthInsuranceCard = gtDen;
+      gtDen = "";
+    } else {
+      healthInsuranceCard = "";
+    }
+  } else if (!healthInsuranceCard && isBHYTCode(gtDen)) {
+    healthInsuranceCard = gtDen;
+    gtDen = "";
+  }
+
+  return { healthInsuranceCard, gtDen };
+};
+
 interface CitizenManagementProps {
   residents: Resident[];
   onAddResident: (newResident: Resident) => void;
@@ -136,6 +167,7 @@ export default function CitizenManagement({
   const handleEditClick = (res: Resident) => {
     setIsEditMode(true);
     setEditingResidentId(res.id);
+    const sanitizedIns = sanitizeResidentInsurance(res.healthInsuranceCard, res.gtDen);
     setFormData({
       fullName: res.fullName,
       gender: res.gender,
@@ -150,8 +182,8 @@ export default function CitizenManagement({
       ownerName: res.ownerName || "",
       permanentAddress: res.permanentAddress || "",
       registrationDate: res.registrationDate || "",
-      healthInsuranceCard: res.healthInsuranceCard || "",
-      gtDen: res.gtDen || ""
+      healthInsuranceCard: sanitizedIns.healthInsuranceCard,
+      gtDen: sanitizedIns.gtDen
     });
     setShowModal(true);
   };
@@ -329,6 +361,8 @@ export default function CitizenManagement({
             permanentAddress = address;
           }
 
+          const sanitizedIns = sanitizeResidentInsurance(healthInsuranceCard, gtDen);
+
           return {
             id: `TEMP-${idx}-${Date.now()}`,
             fullName: fullName || "",
@@ -344,8 +378,8 @@ export default function CitizenManagement({
             ownerName: ownerName || "",
             permanentAddress,
             registrationDate,
-            healthInsuranceCard,
-            gtDen,
+            healthInsuranceCard: sanitizedIns.healthInsuranceCard,
+            gtDen: sanitizedIns.gtDen,
             isValid: !!fullName && !!cccd
           };
         });
@@ -488,6 +522,8 @@ export default function CitizenManagement({
           permanentAddress = address;
         }
 
+        const sanitizedIns = sanitizeResidentInsurance(healthInsuranceCard, gtDen);
+
         return {
           id: `TEMP-${idx}-${Date.now()}`,
           fullName: fullName || "",
@@ -503,8 +539,8 @@ export default function CitizenManagement({
           ownerName: ownerName || "",
           permanentAddress,
           registrationDate,
-          healthInsuranceCard,
-          gtDen,
+          healthInsuranceCard: sanitizedIns.healthInsuranceCard,
+          gtDen: sanitizedIns.gtDen,
           isValid: !!fullName && !!cccd
         };
       });
@@ -1410,25 +1446,32 @@ export default function CitizenManagement({
                     </div>
                   )}
 
-                  <div className="flex items-center gap-3">
-                    <div className="p-1.5 bg-slate-50 rounded text-slate-400"><Shield size={14} className="text-indigo-500" /></div>
-                    <div className="flex-1">
-                      <span className="text-[10px] text-slate-400 block">Thẻ BHYT</span>
-                      <span className="text-slate-800 font-mono font-semibold">
-                        {selectedResident.healthInsuranceCard || "Chưa cập nhật"}
-                      </span>
-                    </div>
-                  </div>
+                  {(() => {
+                    const sanitizedIns = sanitizeResidentInsurance(selectedResident.healthInsuranceCard, selectedResident.gtDen);
+                    return (
+                      <>
+                        <div className="flex items-center gap-3">
+                          <div className="p-1.5 bg-slate-50 rounded text-slate-400"><Shield size={14} className="text-indigo-500" /></div>
+                          <div className="flex-1">
+                            <span className="text-[10px] text-slate-400 block">Thẻ BHYT</span>
+                            <span className="text-slate-800 font-mono font-semibold">
+                              {sanitizedIns.healthInsuranceCard || "Chưa cập nhật"}
+                            </span>
+                          </div>
+                        </div>
 
-                  <div className="flex items-center gap-3">
-                    <div className="p-1.5 bg-slate-50 rounded text-slate-400"><Milestone size={14} className="text-blue-500" /></div>
-                    <div className="flex-1">
-                      <span className="text-[10px] text-slate-400 block">Giấy giới thiệu đến (GT đến)</span>
-                      <span className="text-slate-800 font-medium">
-                        {selectedResident.gtDen || "Chưa cập nhật"}
-                      </span>
-                    </div>
-                  </div>
+                        <div className="flex items-center gap-3">
+                          <div className="p-1.5 bg-slate-50 rounded text-slate-400"><Milestone size={14} className="text-blue-500" /></div>
+                          <div className="flex-1">
+                            <span className="text-[10px] text-slate-400 block">Giấy giới thiệu đến (GT đến)</span>
+                            <span className="text-slate-800 font-medium">
+                              {sanitizedIns.gtDen || "Chưa cập nhật"}
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
 
                   <div className="flex items-center gap-3">
                     <div className="p-1.5 bg-slate-50 rounded text-slate-400"><Calendar size={14} className="text-slate-500" /></div>

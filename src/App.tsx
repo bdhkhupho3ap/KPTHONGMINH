@@ -89,6 +89,37 @@ interface NoteFields {
   gtDen: string;
 }
 
+export const sanitizeResidentInsurance = (healthCardRaw: string, gtDenRaw: string) => {
+  let healthInsuranceCard = (healthCardRaw || "").trim();
+  let gtDen = (gtDenRaw || "").trim();
+
+  const isBHYTCode = (str: string) => {
+    if (!str) return false;
+    const clean = str.toUpperCase().trim();
+    return /^[A-Z]{2}\d{8,}/.test(clean) || (clean.length >= 9 && !clean.includes("THƯỜNG TRÚ") && !clean.includes("TẠM TRÚ") && !clean.includes("TẠM VẮNG") && /^[A-Z0-9]+$/i.test(clean));
+  };
+
+  const isResidencyStatus = (str: string) => {
+    if (!str) return false;
+    const clean = str.toLowerCase().trim();
+    return clean.includes("thường trú") || clean.includes("tạm trú") || clean.includes("tạm vắng");
+  };
+
+  if (isResidencyStatus(healthInsuranceCard)) {
+    if (isBHYTCode(gtDen)) {
+      healthInsuranceCard = gtDen;
+      gtDen = "";
+    } else {
+      healthInsuranceCard = "";
+    }
+  } else if (!healthInsuranceCard && isBHYTCode(gtDen)) {
+    healthInsuranceCard = gtDen;
+    gtDen = "";
+  }
+
+  return { healthInsuranceCard, gtDen };
+};
+
 const parseResidentNote = (noteStr: string, name: string = ''): NoteFields => {
   const result: NoteFields = {
     relationToOwner: 'Thành viên',
@@ -128,6 +159,12 @@ const parseResidentNote = (noteStr: string, name: string = ''): NoteFields => {
       } else if (innerLower.startsWith('quan hệ:') || innerLower.startsWith('quan he:')) {
         result.relationToOwner = result.relationToOwner.trim().split(':')[1].trim();
       }
+
+      // Sanitize BHYT and GT đến swap
+      const sanitized = sanitizeResidentInsurance(result.healthInsuranceCard, result.gtDen);
+      result.healthInsuranceCard = sanitized.healthInsuranceCard;
+      result.gtDen = sanitized.gtDen;
+
       return result;
     } catch (e) {
       // Fallback
@@ -158,14 +195,17 @@ const parseResidentNote = (noteStr: string, name: string = ''): NoteFields => {
     } else if (partLower.startsWith('quan hệ') || partLower.startsWith('quan he')) {
       result.relationToOwner = part.substring(7).trim();
     } else {
-      // If it is just a plain relation name like "Con", "Vợ", or "Chủ hộ"
       if (partLower === 'chủ hộ' || partLower === 'chu ho') {
         result.relationToOwner = 'Chủ hộ';
-      } else {
+      } else if (!partLower.includes('thường trú') && !partLower.includes('tạm trú')) {
         result.relationToOwner = part;
       }
     }
   });
+
+  const sanitized = sanitizeResidentInsurance(result.healthInsuranceCard, result.gtDen);
+  result.healthInsuranceCard = sanitized.healthInsuranceCard;
+  result.gtDen = sanitized.gtDen;
 
   return result;
 };
@@ -175,6 +215,10 @@ const mapDbToResident = (row: any, allHouseholds: Household[]): Resident => {
   const hhCode = hh ? hh.code : (row.householdId || '');
   const gender = (row.gender === 'Nữ' ? 'Nữ' : 'Nam') as "Nam" | "Nữ";
   const noteInfo = parseResidentNote(row.note || '', row.name);
+
+  // Additional safety check for BHYT & gtDen
+  const sanitizedInsurance = sanitizeResidentInsurance(noteInfo.healthInsuranceCard, noteInfo.gtDen);
+
   return {
     id: row.id,
     fullName: row.name,
@@ -188,8 +232,8 @@ const mapDbToResident = (row: any, allHouseholds: Household[]): Resident => {
     householdId: hhCode,
     relationToOwner: noteInfo.relationToOwner,
     permanentAddress: noteInfo.permanentAddress || row.address || '',
-    healthInsuranceCard: noteInfo.healthInsuranceCard,
-    gtDen: noteInfo.gtDen,
+    healthInsuranceCard: sanitizedInsurance.healthInsuranceCard,
+    gtDen: sanitizedInsurance.gtDen,
     avatar: gender === 'Nữ' 
       ? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150' 
       : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
