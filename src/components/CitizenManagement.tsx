@@ -24,7 +24,8 @@ import {
   Home,
   Shield,
   Milestone,
-  Sparkles
+  Sparkles,
+  Building
 } from "lucide-react";
 import { Resident, Household } from "../types";
 import * as XLSX from "xlsx";
@@ -86,6 +87,7 @@ export default function CitizenManagement({
   const [importFileName, setImportFileName] = useState("");
   const [importTab, setImportTab] = useState<"file" | "paste">("file");
   const [pasteText, setPasteText] = useState("");
+  const [pasteTargetStatus, setPasteTargetStatus] = useState<"Thường trú" | "Tạm trú" | "Tạm vắng" | "auto">("Thường trú");
 
   // Edit Mode state
   const [isEditMode, setIsEditMode] = useState(false);
@@ -358,8 +360,8 @@ export default function CitizenManagement({
     reader.readAsArrayBuffer(file);
   };
 
-  // TSV raw data parser for paste feature
-  const handlePasteParse = (text: string) => {
+  // TSV raw data parser for paste feature (supports Thường trú, Tạm trú, Tạm vắng)
+  const handlePasteParse = (text: string, targetStatus: "Thường trú" | "Tạm trú" | "Tạm vắng" | "auto" = pasteTargetStatus) => {
     if (!text.trim()) {
       setParsedData([]);
       return;
@@ -389,14 +391,14 @@ export default function CitizenManagement({
         // First row is actual data
         dataRows = lines.filter(row => row.length > 1 && row.some(cell => cell !== ""));
         
-        // Auto-assign virtual headers based on column count
+        // Auto-assign virtual headers based on targetStatus or column count
         const colCount = lines[0].length;
-        if (colCount >= 11) {
-          // Thường trú layout (12 columns)
-          headers = ["STT", "Họ và tên", "Ngày sinh", "Giới tính", "Số ĐDCN/CCCD/CMND", "Họ và tên chủ hộ", "Nơi thường trú", "Khu phố", "Ngày ĐKTT", "Nơi ở hiện tại", "Thẻ bhyt", "GT đến"];
-        } else {
+        if (targetStatus === "Tạm trú" || (targetStatus === "auto" && colCount < 11)) {
           // Tạm trú layout (10 columns)
           headers = ["STT", "Tên", "Ngày sinh", "Giới tính", "CCCD", "Địa chỉ tạm trú", "Khu phố", "Địa chỉ thường trú", "Thẻ bhyt", "GT đến"];
+        } else {
+          // Thường trú layout (12 columns)
+          headers = ["STT", "Họ và tên", "Ngày sinh", "Giới tính", "Số ĐDCN/CCCD/CMND", "Họ và tên chủ hộ", "Nơi thường trú", "Khu phố", "Ngày ĐKTT", "Nơi ở hiện tại", "Thẻ bhyt", "GT đến"];
         }
       } else {
         // First row is header row
@@ -448,23 +450,27 @@ export default function CitizenManagement({
           gender = "Nữ";
         }
 
-        // Status parser with smart fallbacks
+        // Status assignment according to chosen target mode
         let status: "Thường trú" | "Tạm trú" | "Tạm vắng" = "Thường trú";
-        const hasTemporaryHeader = headers.some(h => h.toLowerCase().includes("tạm trú"));
-        if (hasTemporaryHeader) {
-          status = "Tạm trú";
+        if (targetStatus !== "auto") {
+          status = targetStatus;
         } else {
-          const lowerStatus = statusStr.toLowerCase();
-          if (lowerStatus.includes("tạm trú") || lowerStatus === "tam tru") {
+          const hasTemporaryHeader = headers.some(h => h.toLowerCase().includes("tạm trú"));
+          if (hasTemporaryHeader) {
             status = "Tạm trú";
-          } else if (lowerStatus.includes("tạm vắng") || lowerStatus === "tam vang") {
-            status = "Tạm vắng";
           } else {
-            // Check row contents
-            if (row.some(cell => cell.toLowerCase().includes("tạm trú"))) {
+            const lowerStatus = statusStr.toLowerCase();
+            if (lowerStatus.includes("tạm trú") || lowerStatus === "tam tru") {
               status = "Tạm trú";
-            } else if (row.some(cell => cell.toLowerCase().includes("tạm vắng"))) {
+            } else if (lowerStatus.includes("tạm vắng") || lowerStatus === "tam vang") {
               status = "Tạm vắng";
+            } else {
+              // Check row contents
+              if (row.some(cell => cell.toLowerCase().includes("tạm trú"))) {
+                status = "Tạm trú";
+              } else if (row.some(cell => cell.toLowerCase().includes("tạm vắng"))) {
+                status = "Tạm vắng";
+              }
             }
           }
         }
@@ -1875,18 +1881,99 @@ export default function CitizenManagement({
                 </div>
               ) : (
                 /* Raw Paste Textarea Zone */
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-600 block">Dán dữ liệu Excel của bạn vào đây (bao gồm cả dòng tiêu đề):</label>
-                  <textarea
-                    rows={6}
-                    value={pasteText}
-                    onChange={(e) => {
-                      setPasteText(e.target.value);
-                      handlePasteParse(e.target.value);
-                    }}
-                    placeholder="Ví dụ:&#10;STT&#9;Họ và tên&#9;Ngày sinh&#9;Giới tính&#9;Số ĐDCN/CCCD&#10;1&#9;NGUYỄN VĂN A&#9;15/08/1995&#9;Nam&#9;079095012345"
-                    className="w-full p-3 border border-slate-200 rounded-lg text-xs font-mono focus:outline-none focus:border-emerald-500 bg-slate-50/30"
-                  />
+                <div className="space-y-3">
+                  {/* Selector for Thường trú vs Tạm trú vs Tạm vắng vs Auto */}
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <span className="text-xs font-bold text-slate-700">Chọn phân loại khi dán dữ liệu:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPasteTargetStatus("Thường trú");
+                          if (pasteText) handlePasteParse(pasteText, "Thường trú");
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                          pasteTargetStatus === "Thường trú" 
+                            ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-500/20" 
+                            : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        <Home size={13} /> Thường trú
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPasteTargetStatus("Tạm trú");
+                          if (pasteText) handlePasteParse(pasteText, "Tạm trú");
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                          pasteTargetStatus === "Tạm trú" 
+                            ? "bg-amber-600 text-white shadow-sm ring-2 ring-amber-500/20" 
+                            : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        <Building size={13} /> Tạm trú
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPasteTargetStatus("Tạm vắng");
+                          if (pasteText) handlePasteParse(pasteText, "Tạm vắng");
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                          pasteTargetStatus === "Tạm vắng" 
+                            ? "bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-500/20" 
+                            : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        <Milestone size={13} /> Tạm vắng
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPasteTargetStatus("auto");
+                          if (pasteText) handlePasteParse(pasteText, "auto");
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                          pasteTargetStatus === "auto" 
+                            ? "bg-slate-800 text-white shadow-sm ring-2 ring-slate-700/20" 
+                            : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        ⚙️ Tự động
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+                      <span>
+                        {pasteTargetStatus === "Thường trú" && "Dán danh sách cư dân THƯỜNG TRÚ từ Excel (Sao chép bảng từ Excel):"}
+                        {pasteTargetStatus === "Tạm trú" && "Dán danh sách cư dân TẠM TRÚ từ Excel (Sao chép bảng từ Excel):"}
+                        {pasteTargetStatus === "Tạm vắng" && "Dán danh sách cư dân TẠM VẮNG từ Excel (Sao chép bảng từ Excel):"}
+                        {pasteTargetStatus === "auto" && "Dán dữ liệu thô từ Excel (Bao gồm cả dòng tiêu đề):"}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {pasteTargetStatus === "Thường trú" && "Mặc định gán: THƯỜNG TRÚ"}
+                        {pasteTargetStatus === "Tạm trú" && "Mặc định gán: TẠM TRÚ"}
+                        {pasteTargetStatus === "Tạm vắng" && "Mặc định gán: TẠM VẮNG"}
+                      </span>
+                    </label>
+                    <textarea
+                      rows={6}
+                      value={pasteText}
+                      onChange={(e) => {
+                        setPasteText(e.target.value);
+                        handlePasteParse(e.target.value, pasteTargetStatus);
+                      }}
+                      placeholder={
+                        pasteTargetStatus === "Tạm trú"
+                          ? "Ví dụ danh sách TẠM TRÚ:&#10;STT&#9;Họ và tên&#9;Ngày sinh&#9;Giới tính&#9;Số CCCD&#9;Địa chỉ tạm trú&#10;1&#9;NGUYỄN VĂN A&#9;15/08/1995&#9;Nam&#9;079095012345&#9;42 Lương Định Của"
+                          : "Ví dụ danh sách THƯỜNG TRÚ:&#10;STT&#9;Họ và tên&#9;Ngày sinh&#9;Giới tính&#9;Số ĐDCN/CCCD&#9;Họ tên chủ hộ&#9;Nơi thường trú&#10;1&#9;NGUYỄN VĂN A&#9;15/08/1995&#9;Nam&#9;079095012345&#9;NGUYỄN VĂN B&#9;78 Lương Định Của"
+                      }
+                      className="w-full p-3 border border-slate-200 rounded-lg text-xs font-mono focus:outline-none focus:border-emerald-500 bg-slate-50/30"
+                    />
+                  </div>
                 </div>
               )}
 
