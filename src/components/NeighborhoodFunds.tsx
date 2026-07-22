@@ -26,7 +26,10 @@ import {
   ChevronRight,
   FileUp,
   LayoutGrid,
-  List
+  List,
+  Pencil,
+  Trash2,
+  Sparkles
 } from "lucide-react";
 import { FundContribution } from "../types";
 import Pagination from "./Pagination";
@@ -47,6 +50,8 @@ interface NeighborhoodFundsProps {
   contributions: FundContribution[];
   onAddContribution: (newCont: FundContribution) => void;
   onUpdateContributionStatus: (id: string, status: "Đã nộp" | "Chưa nộp", paidAt?: string) => void;
+  onDeleteContribution?: (id: string) => void;
+  onUpdateContribution?: (updated: FundContribution) => void;
   households?: any[];
 }
 
@@ -106,13 +111,95 @@ export default function NeighborhoodFunds({
   contributions, 
   onAddContribution, 
   onUpdateContributionStatus,
+  onDeleteContribution,
+  onUpdateContribution,
   households = []
 }: NeighborhoodFundsProps) {
   // Sub-tabs: "thu" (Phiếu thu), "chi" (Phiếu chi), "baocao" (Tổng hợp báo cáo)
   const [activeSubTab, setActiveSubTab] = useState<"thu" | "chi" | "baocao">("thu");
 
+  // Toast state
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  // Edit / Delete states for Contributions (Phiếu thu)
+  const [contributionToEdit, setContributionToEdit] = useState<FundContribution | null>(null);
+  const [contributionToDelete, setContributionToDelete] = useState<FundContribution | null>(null);
+
+  // Edit / Delete states for Expenditures (Phiếu chi)
+  const [expenditureToEdit, setExpenditureToEdit] = useState<Expenditure | null>(null);
+  const [expenditureToDelete, setExpenditureToDelete] = useState<Expenditure | null>(null);
+
+  // Save Edit Contribution
+  const handleSaveEditContribution = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contributionToEdit) return;
+    if (onUpdateContribution) {
+      onUpdateContribution(contributionToEdit);
+    }
+    setContributionToEdit(null);
+    showToast("Đã cập nhật khoản đóng góp thành công!", "success");
+  };
+
+  // Confirm Delete Contribution
+  const handleConfirmDeleteContribution = (id: string) => {
+    if (onDeleteContribution) {
+      onDeleteContribution(id);
+    }
+    setContributionToDelete(null);
+    showToast("Đã xóa phiếu thu khỏi danh sách!", "success");
+  };
+
   // State quản lý danh sách các khoản chi (Expenditures)
   const [expenditures, setExpenditures] = useState<Expenditure[]>([]);
+
+  // Save Add Expenditure
+  const handleCreateExpenditure = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chiTitle || !chiAmount || !chiReceiver) {
+      alert("Vui lòng nhập đầy đủ các trường thông tin bắt buộc!");
+      return;
+    }
+    const todayStr = new Date().toLocaleDateString("vi-VN");
+    const newExp: Expenditure = {
+      id: "EXP" + (expenditures.length + 1).toString().padStart(3, "0"),
+      fundName: chiFundName,
+      title: chiTitle,
+      amount: Number(chiAmount) || 0,
+      spentAt: chiSpentAt || todayStr,
+      receiver: chiReceiver,
+      evidence: chiEvidence || "PT-" + Math.floor(1000 + Math.random() * 9000),
+      approvedBy: chiApprovedBy
+    };
+    setExpenditures([newExp, ...expenditures]);
+    setShowAddChiModal(false);
+    showToast("Đã lập phiếu chi hoạt động thành công!", "success");
+
+    // Reset Form
+    setChiTitle("");
+    setChiAmount(500000);
+    setChiReceiver("");
+    setChiEvidence("");
+  };
+
+  // Save Edit Expenditure
+  const handleSaveEditExpenditure = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!expenditureToEdit) return;
+    setExpenditures(prev => prev.map(exp => exp.id === expenditureToEdit.id ? expenditureToEdit : exp));
+    setExpenditureToEdit(null);
+    showToast("Đã cập nhật thông tin phiếu chi thành công!", "success");
+  };
+
+  // Confirm Delete Expenditure
+  const handleConfirmDeleteExpenditure = (id: string) => {
+    setExpenditures(prev => prev.filter(exp => exp.id !== id));
+    setExpenditureToDelete(null);
+    showToast("Đã xóa phiếu chi thành công!", "success");
+  };
 
   // States for Adding Contribution (Thu)
   const [showAddThuModal, setShowAddThuModal] = useState(false);
@@ -668,6 +755,21 @@ export default function NeighborhoodFunds({
                                 Thu tiền
                               </button>
                             )}
+
+                            <button 
+                              onClick={() => setContributionToEdit(cont)}
+                              className="text-indigo-600 hover:bg-indigo-50 p-1.5 rounded-md transition-colors cursor-pointer"
+                              title="Sửa phiếu thu"
+                            >
+                              <Pencil size={13} />
+                            </button>
+                            <button 
+                              onClick={() => setContributionToDelete(cont)}
+                              className="text-rose-600 hover:bg-rose-50 p-1.5 rounded-md transition-colors cursor-pointer"
+                              title="Xóa phiếu thu"
+                            >
+                              <Trash2 size={13} />
+                            </button>
                           </td>
                         </tr>
                       );
@@ -821,16 +923,19 @@ export default function NeighborhoodFunds({
                             >
                               <Printer size={12} /> In Phiếu Chi
                             </button>
-                            <button
-                              onClick={() => {
-                                if (window.confirm(`Bạn có chắc chắn muốn xóa phiếu chi "${exp.id}" không?`)) {
-                                  setExpenditures(expenditures.filter(e => e.id !== exp.id));
-                                }
-                              }}
-                              className="text-[10px] text-slate-400 hover:text-rose-600 p-1 rounded transition-colors cursor-pointer"
+                            <button 
+                              onClick={() => setExpenditureToEdit(exp)}
+                              className="text-indigo-600 hover:bg-indigo-50 p-1.5 rounded-md transition-colors cursor-pointer"
+                              title="Sửa phiếu chi"
+                            >
+                              <Pencil size={13} />
+                            </button>
+                            <button 
+                              onClick={() => setExpenditureToDelete(exp)}
+                              className="text-rose-600 hover:bg-rose-50 p-1.5 rounded-md transition-colors cursor-pointer"
                               title="Xóa phiếu chi"
                             >
-                              Xóa
+                              <Trash2 size={13} />
                             </button>
                           </div>
                         </td>
@@ -1344,6 +1449,297 @@ export default function NeighborhoodFunds({
             </div>
 
           </div>
+        </div>
+      )}
+
+      {/* MODAL 1: EDIT CONTRIBUTION (Phiếu Thu) */}
+      {contributionToEdit && (
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
+              <h3 className="font-bold text-sm">Chỉnh sửa Phiếu Thu Đóng góp</h3>
+              <button onClick={() => setContributionToEdit(null)} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveEditContribution} className="p-5 space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-600 block">Mã Hộ khẩu *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={contributionToEdit.householdCode}
+                    onChange={(e) => setContributionToEdit({ ...contributionToEdit, householdCode: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 font-mono"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-600 block">Họ tên Đại diện nộp *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={contributionToEdit.ownerName}
+                    onChange={(e) => setContributionToEdit({ ...contributionToEdit, ownerName: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-600 block">Tên danh mục Quỹ đóng góp</label>
+                <select 
+                  value={contributionToEdit.fundName}
+                  onChange={(e) => setContributionToEdit({ ...contributionToEdit, fundName: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 bg-white"
+                >
+                  <option value="Quỹ Khuyến học">Quỹ Khuyến học</option>
+                  <option value="Quỹ Vì người nghèo">Quỹ Vì người nghèo</option>
+                  <option value="Quỹ Quốc phòng an ninh">Quỹ Quốc phòng an ninh</option>
+                  <option value="Quỹ Phòng chống thiên tai">Quỹ Phòng chống thiên tai</option>
+                  <option value="Quỹ Bảo trì hẻm">Quỹ Bảo trì hẻm</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-600 block">Số tiền đóng góp (VNĐ) *</label>
+                  <input 
+                    type="number" 
+                    required
+                    value={contributionToEdit.amount}
+                    onChange={(e) => setContributionToEdit({ ...contributionToEdit, amount: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 font-mono font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-600 block">Trạng thái đóng nộp</label>
+                  <select 
+                    value={contributionToEdit.status}
+                    onChange={(e) => setContributionToEdit({ 
+                      ...contributionToEdit, 
+                      status: e.target.value as any,
+                      paidAt: e.target.value === "Đã nộp" ? (contributionToEdit.paidAt || new Date().toLocaleDateString("vi-VN")) : undefined 
+                    })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 bg-white"
+                  >
+                    <option value="Đã nộp">Đã nộp tiền</option>
+                    <option value="Chưa nộp">Chưa nộp tiền</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-600 block">Địa chỉ hộ gia đình</label>
+                <input 
+                  type="text" 
+                  value={contributionToEdit.address}
+                  onChange={(e) => setContributionToEdit({ ...contributionToEdit, address: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex justify-end gap-2 text-xs">
+                <button 
+                  type="button" 
+                  onClick={() => setContributionToEdit(null)}
+                  className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors font-semibold"
+                >
+                  Hủy
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: DELETE CONTRIBUTION CONFIRMATION */}
+      {contributionToDelete && (
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base">Xác nhận Xóa Phiếu Thu?</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Bạn có chắc chắn muốn xóa phiếu thu <strong>"{contributionToDelete.id}"</strong> của chủ hộ <strong>"{contributionToDelete.ownerName}"</strong> không?
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2 text-xs font-bold">
+              <button 
+                onClick={() => setContributionToDelete(null)}
+                className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => handleConfirmDeleteContribution(contributionToDelete.id)}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors shadow-sm"
+              >
+                Đồng ý Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: EDIT EXPENDITURE (Phiếu Chi) */}
+      {expenditureToEdit && (
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
+              <h3 className="font-bold text-sm">Chỉnh sửa Phiếu Chi Hoạt động</h3>
+              <button onClick={() => setExpenditureToEdit(null)} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveEditExpenditure} className="p-5 space-y-4 text-xs">
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-600 block">Trích từ Quỹ *</label>
+                <select 
+                  value={expenditureToEdit.fundName}
+                  onChange={(e) => setExpenditureToEdit({ ...expenditureToEdit, fundName: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 bg-white"
+                >
+                  <option value="Quỹ Khuyến học">Quỹ Khuyến học</option>
+                  <option value="Quỹ Vì người nghèo">Quỹ Vì người nghèo</option>
+                  <option value="Quỹ Quốc phòng an ninh">Quỹ Quốc phòng an ninh</option>
+                  <option value="Quỹ Phòng chống thiên tai">Quỹ Phòng chống thiên tai</option>
+                  <option value="Quỹ Bảo trì hẻm">Quỹ Bảo trì hẻm</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-600 block">Nội dung chi tiêu chi tiết *</label>
+                <textarea 
+                  rows={2}
+                  required
+                  value={expenditureToEdit.title}
+                  onChange={(e) => setExpenditureToEdit({ ...expenditureToEdit, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-600 block">Số tiền xuất quỹ (VNĐ) *</label>
+                  <input 
+                    type="number" 
+                    required
+                    value={expenditureToEdit.amount}
+                    onChange={(e) => setExpenditureToEdit({ ...expenditureToEdit, amount: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 font-mono font-bold text-rose-600"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-600 block">Ngày trích chi *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={expenditureToEdit.spentAt}
+                    onChange={(e) => setExpenditureToEdit({ ...expenditureToEdit, spentAt: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-600 block">Đơn vị / Người nhận tiền *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={expenditureToEdit.receiver}
+                    onChange={(e) => setExpenditureToEdit({ ...expenditureToEdit, receiver: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-600 block">Mã chứng từ / Hóa đơn</label>
+                  <input 
+                    type="text" 
+                    value={expenditureToEdit.evidence || ""}
+                    onChange={(e) => setExpenditureToEdit({ ...expenditureToEdit, evidence: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-600 block">Người phê duyệt quyết toán</label>
+                <input 
+                  type="text" 
+                  value={expenditureToEdit.approvedBy}
+                  onChange={(e) => setExpenditureToEdit({ ...expenditureToEdit, approvedBy: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex justify-end gap-2 text-xs">
+                <button 
+                  type="button" 
+                  onClick={() => setExpenditureToEdit(null)}
+                  className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors font-semibold"
+                >
+                  Hủy
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: DELETE EXPENDITURE CONFIRMATION */}
+      {expenditureToDelete && (
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base">Xác nhận Xóa Phiếu Chi?</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Bạn có chắc chắn muốn xóa phiếu chi <strong>"{expenditureToDelete.id}"</strong> - <strong>"{expenditureToDelete.title}"</strong> không?
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2 text-xs font-bold">
+              <button 
+                onClick={() => setExpenditureToDelete(null)}
+                className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => handleConfirmDeleteExpenditure(expenditureToDelete.id)}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors shadow-sm"
+              >
+                Đồng ý Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification Banner */}
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold flex items-center gap-2 animate-in slide-in-from-bottom-5 duration-200 ${
+          toast.type === "success" ? "bg-emerald-900 text-white border-emerald-700" : "bg-rose-900 text-white border-rose-700"
+        }`}>
+          <Sparkles size={16} className="text-amber-400" />
+          {toast.message}
         </div>
       )}
 

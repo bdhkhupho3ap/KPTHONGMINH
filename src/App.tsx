@@ -1174,12 +1174,28 @@ export default function App() {
     setCommunityEvents(communityEvents.map(e => e.id === id ? { ...e, status } : e));
   };
 
+  const handleDeleteCommunityEvent = (id: string) => {
+    setCommunityEvents(prev => prev.filter(e => e.id !== id));
+  };
+
+  const handleUpdateCommunityEvent = (updated: CommunityEvent) => {
+    setCommunityEvents(prev => prev.map(e => e.id === updated.id ? updated : e));
+  };
+
   const handleAddFundContribution = (newCont: FundContribution) => {
     setFundContributions([newCont, ...fundContributions]);
   };
 
   const handleUpdateContributionStatus = (id: string, status: FundContribution["status"], paidAt?: string) => {
     setFundContributions(fundContributions.map(c => c.id === id ? { ...c, status, paidAt } : c));
+  };
+
+  const handleDeleteFundContribution = (id: string) => {
+    setFundContributions(prev => prev.filter(c => c.id !== id));
+  };
+
+  const handleUpdateFundContribution = (updated: FundContribution) => {
+    setFundContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
   };
 
   // Tab Title helper
@@ -1434,6 +1450,8 @@ export default function App() {
               events={communityEvents}
               onAddEvent={handleAddCommunityEvent}
               onUpdateEventStatus={handleUpdateEventStatus}
+              onDeleteEvent={handleDeleteCommunityEvent}
+              onUpdateEvent={handleUpdateCommunityEvent}
             />
           )}
 
@@ -1442,6 +1460,8 @@ export default function App() {
               contributions={fundContributions}
               onAddContribution={handleAddFundContribution}
               onUpdateContributionStatus={handleUpdateContributionStatus}
+              onDeleteContribution={handleDeleteFundContribution}
+              onUpdateContribution={handleUpdateFundContribution}
               households={households}
             />
           )}

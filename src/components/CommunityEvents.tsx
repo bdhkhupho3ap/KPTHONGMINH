@@ -17,7 +17,10 @@ import {
   Search,
   BellRing,
   X,
-  Share2
+  Share2,
+  Pencil,
+  Trash2,
+  Pin
 } from "lucide-react";
 import { CommunityEvent } from "../types";
 import Pagination from "./Pagination";
@@ -26,6 +29,8 @@ interface CommunityEventsProps {
   events: CommunityEvent[];
   onAddEvent: (newEvent: CommunityEvent) => void;
   onUpdateEventStatus: (id: string, status: CommunityEvent["status"]) => void;
+  onDeleteEvent?: (id: string) => void;
+  onUpdateEvent?: (updated: CommunityEvent) => void;
 }
 
 interface LocalNews {
@@ -38,8 +43,71 @@ interface LocalNews {
   isPinned?: boolean;
 }
 
-export default function CommunityEvents({ events, onAddEvent, onUpdateEventStatus }: CommunityEventsProps) {
+export default function CommunityEvents({ 
+  events, 
+  onAddEvent, 
+  onUpdateEventStatus,
+  onDeleteEvent,
+  onUpdateEvent
+}: CommunityEventsProps) {
   const [activeSubTab, setActiveSubTab] = useState<"news" | "events">("news");
+  
+  // Toast state
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  // Edit & Delete states for News
+  const [newsToEdit, setNewsToEdit] = useState<LocalNews | null>(null);
+  const [newsToDelete, setNewsToDelete] = useState<LocalNews | null>(null);
+
+  // Edit & Delete states for Events
+  const [eventToEdit, setEventToEdit] = useState<CommunityEvent | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<CommunityEvent | null>(null);
+
+  // Toggle Pin News
+  const handleTogglePinNews = (id: string) => {
+    setNewsList(prev => prev.map(n => n.id === id ? { ...n, isPinned: !n.isPinned } : n));
+    showToast("Đã thay đổi trạng thái ghim bản tin!", "success");
+  };
+
+  // Save Edit News
+  const handleSaveEditNews = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsToEdit) return;
+    setNewsList(prev => prev.map(n => n.id === newsToEdit.id ? newsToEdit : n));
+    setNewsToEdit(null);
+    showToast("Đã cập nhật nội dung bản tin thành công!", "success");
+  };
+
+  // Confirm Delete News
+  const handleConfirmDeleteNews = (id: string) => {
+    setNewsList(prev => prev.filter(n => n.id !== id));
+    setNewsToDelete(null);
+    showToast("Đã xóa bản tin thành công!", "success");
+  };
+
+  // Save Edit Event
+  const handleSaveEditEvent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!eventToEdit) return;
+    if (onUpdateEvent) {
+      onUpdateEvent(eventToEdit);
+    }
+    setEventToEdit(null);
+    showToast("Đã cập nhật thông tin sự kiện thành công!", "success");
+  };
+
+  // Confirm Delete Event
+  const handleConfirmDeleteEvent = (id: string) => {
+    if (onDeleteEvent) {
+      onDeleteEvent(id);
+    }
+    setEventToDelete(null);
+    showToast("Đã xóa sự kiện khỏi hệ thống!", "success");
+  };
   
   // Pagination states
   const [currentNewsPage, setCurrentNewsPage] = useState(1);
@@ -264,18 +332,35 @@ export default function CommunityEvents({ events, onAddEvent, onUpdateEventStatu
                       <span className="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700">
                         {news.category}
                       </span>
-                      <span className="text-[10px] text-slate-400 font-mono">{news.date}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-400 font-mono">{news.date}</span>
+                        <button 
+                          onClick={() => handleTogglePinNews(news.id)}
+                          title="Bỏ ghim"
+                          className="text-rose-500 hover:text-slate-400 transition-colors p-1 cursor-pointer"
+                        >
+                          <Pin size={14} className="fill-rose-500" />
+                        </button>
+                      </div>
                     </div>
                     <h3 className="font-bold text-slate-800 text-sm mt-3 leading-snug">{news.title}</h3>
                     <p className="text-slate-600 text-xs mt-2 line-clamp-3 leading-relaxed">{news.content}</p>
                     <div className="mt-4 pt-3 border-t border-rose-100/60 flex items-center justify-between text-[10px] text-slate-500">
                       <span className="font-medium flex items-center gap-1"><User size={10} /> Đăng bởi: {news.author}</span>
-                      <button 
-                        onClick={() => alert(`Chi tiết bản tin:\n\nTiêu đề: ${news.title}\n\nNội dung: ${news.content}\n\nTác giả: ${news.author}`)}
-                        className="text-teal-600 hover:underline font-bold"
-                      >
-                        Đọc toàn văn
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => setNewsToEdit(news)}
+                          className="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Pencil size={12} /> Sửa
+                        </button>
+                        <button 
+                          onClick={() => setNewsToDelete(news)}
+                          className="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 size={12} /> Xóa
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -303,20 +388,35 @@ export default function CommunityEvents({ events, onAddEvent, onUpdateEventStatu
                         }`}>
                           {news.category}
                         </span>
-                        <span className="text-slate-400 font-mono">{news.date}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-slate-400 font-mono">{news.date}</span>
+                          <button 
+                            onClick={() => handleTogglePinNews(news.id)}
+                            title={news.isPinned ? "Bỏ ghim" : "Ghim quan trọng"}
+                            className={`p-1 transition-colors cursor-pointer ${news.isPinned ? "text-rose-500" : "text-slate-300 hover:text-rose-500"}`}
+                          >
+                            <Pin size={14} className={news.isPinned ? "fill-rose-500" : ""} />
+                          </button>
+                        </div>
                       </div>
                       <h4 className="font-bold text-slate-800 text-sm leading-snug">{news.title}</h4>
                       <p className="text-slate-500 text-xs leading-relaxed line-clamp-3">{news.content}</p>
                     </div>
 
                     <div className="mt-4 pt-3 border-t border-slate-50 flex justify-between items-center text-[10px] text-slate-400">
-                      <span className="truncate max-w-[180px]">Nguồn: {news.author}</span>
-                      <div className="flex gap-2">
+                      <span className="truncate max-w-[150px]">Nguồn: {news.author}</span>
+                      <div className="flex items-center gap-3">
                         <button 
-                          onClick={() => alert(`Chi tiết bản tin:\n\nTiêu đề: ${news.title}\n\nNội dung: ${news.content}\n\nTác giả: ${news.author}`)}
-                          className="text-teal-600 font-bold hover:underline"
+                          onClick={() => setNewsToEdit(news)}
+                          className="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 cursor-pointer"
                         >
-                          Xem chi tiết
+                          <Pencil size={12} /> Sửa
+                        </button>
+                        <button 
+                          onClick={() => setNewsToDelete(news)}
+                          className="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 size={12} /> Xóa
                         </button>
                       </div>
                     </div>
@@ -452,36 +552,53 @@ export default function CommunityEvents({ events, onAddEvent, onUpdateEventStatu
                     </div>
 
                     {/* Operations */}
-                    <div className="flex gap-2 pt-2 border-t border-slate-50">
-                      {ev.status === "Sắp diễn ra" && (
-                        <>
-                          <button
-                            onClick={() => onUpdateEventStatus(ev.id, "Đang diễn ra")}
-                            className="flex-1 text-[10px] font-extrabold py-1.5 px-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 rounded-lg transition-colors cursor-pointer text-center"
-                          >
-                            Bắt đầu ngay
-                          </button>
+                    <div className="flex flex-col gap-2 pt-2 border-t border-slate-50">
+                      <div className="flex gap-2">
+                        {ev.status === "Sắp diễn ra" && (
+                          <>
+                            <button
+                              onClick={() => onUpdateEventStatus(ev.id, "Đang diễn ra")}
+                              className="flex-1 text-[10px] font-extrabold py-1.5 px-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 rounded-lg transition-colors cursor-pointer text-center"
+                            >
+                              Bắt đầu ngay
+                            </button>
+                            <button
+                              onClick={() => onUpdateEventStatus(ev.id, "Đã kết thúc")}
+                              className="flex-1 text-[10px] font-extrabold py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-lg transition-colors cursor-pointer text-center"
+                            >
+                              Hoàn tất sớm
+                            </button>
+                          </>
+                        )}
+                        {ev.status === "Đang diễn ra" && (
                           <button
                             onClick={() => onUpdateEventStatus(ev.id, "Đã kết thúc")}
-                            className="flex-1 text-[10px] font-extrabold py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-lg transition-colors cursor-pointer text-center"
+                            className="w-full text-[10px] font-extrabold py-1.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer text-center"
                           >
-                            Hoàn tất sớm
+                            Xác nhận Đã tổ chức xong
                           </button>
-                        </>
-                      )}
-                      {ev.status === "Đang diễn ra" && (
-                        <button
-                          onClick={() => onUpdateEventStatus(ev.id, "Đã kết thúc")}
-                          className="w-full text-[10px] font-extrabold py-1.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer text-center"
+                        )}
+                        {ev.status === "Đã kết thúc" && (
+                          <div className="w-full text-[10px] text-slate-400 text-center font-semibold py-1">
+                            ✓ Đã lưu trữ hồ sơ hoạt động
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex justify-end items-center gap-3 pt-1 text-[11px]">
+                        <button 
+                          onClick={() => setEventToEdit(ev)}
+                          className="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 cursor-pointer"
                         >
-                          Xác nhận Đã tổ chức xong
+                          <Pencil size={12} /> Sửa sự kiện
                         </button>
-                      )}
-                      {ev.status === "Đã kết thúc" && (
-                        <div className="w-full text-[10px] text-slate-400 text-center font-semibold py-1">
-                          ✓ Đã lưu trữ hồ sơ hoạt động
-                        </div>
-                      )}
+                        <button 
+                          onClick={() => setEventToDelete(ev)}
+                          className="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 size={12} /> Xóa sự kiện
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -697,6 +814,283 @@ export default function CommunityEvents({ events, onAddEvent, onUpdateEventStatu
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* MODAL 3: EDIT NEWS */}
+      {newsToEdit && (
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
+              <h3 className="font-bold text-sm">Chỉnh sửa Bản tin / Thông báo</h3>
+              <button onClick={() => setNewsToEdit(null)} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveEditNews} className="p-5 space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600 block">Tiêu đề thông báo *</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newsToEdit.title}
+                  onChange={(e) => setNewsToEdit({ ...newsToEdit, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-teal-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 block">Phân loại</label>
+                  <select 
+                    value={newsToEdit.category}
+                    onChange={(e) => setNewsToEdit({ ...newsToEdit, category: e.target.value as any })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-teal-500 bg-white"
+                  >
+                    <option value="Thông báo khẩn">Thông báo khẩn</option>
+                    <option value="Hành chính">Hành chính</option>
+                    <option value="Y tế & Đời sống">Y tế & Đời sống</option>
+                    <option value="An sinh xã hội">An sinh xã hội</option>
+                    <option value="Phong trào">Phong trào</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 block">Tác giả / Cơ quan phát hành</label>
+                  <input 
+                    type="text" 
+                    value={newsToEdit.author}
+                    onChange={(e) => setNewsToEdit({ ...newsToEdit, author: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-teal-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600 block">Nội dung chi tiết *</label>
+                <textarea 
+                  rows={4}
+                  required
+                  value={newsToEdit.content}
+                  onChange={(e) => setNewsToEdit({ ...newsToEdit, content: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-teal-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input 
+                  type="checkbox" 
+                  id="edit-pinned"
+                  checked={newsToEdit.isPinned || false}
+                  onChange={(e) => setNewsToEdit({ ...newsToEdit, isPinned: e.target.checked })}
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                />
+                <label htmlFor="edit-pinned" className="text-xs font-semibold text-slate-700 cursor-pointer">
+                  Ghim lên đầu trang thông báo quan trọng
+                </label>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex justify-end gap-2 text-xs">
+                <button 
+                  type="button" 
+                  onClick={() => setNewsToEdit(null)}
+                  className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors font-semibold"
+                >
+                  Hủy
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: DELETE NEWS CONFIRMATION */}
+      {newsToDelete && (
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base">Xác nhận Xóa Bản tin?</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Bạn có chắc chắn muốn xóa bản tin <strong>"{newsToDelete.title}"</strong> không? Thao tác này không thể khôi phục.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2 text-xs font-bold">
+              <button 
+                onClick={() => setNewsToDelete(null)}
+                className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => handleConfirmDeleteNews(newsToDelete.id)}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors shadow-sm"
+              >
+                Đồng ý Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: EDIT EVENT */}
+      {eventToEdit && (
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
+              <h3 className="font-bold text-sm">Chỉnh sửa Sự kiện & Hoạt động</h3>
+              <button onClick={() => setEventToEdit(null)} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveEditEvent} className="p-5 space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600 block">Tên sự kiện / Tên cuộc họp *</label>
+                <input 
+                  type="text" 
+                  required
+                  value={eventToEdit.title}
+                  onChange={(e) => setEventToEdit({ ...eventToEdit, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 block">Thời gian diễn ra *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={eventToEdit.dateTime}
+                    onChange={(e) => setEventToEdit({ ...eventToEdit, dateTime: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 block">Trạng thái</label>
+                  <select 
+                    value={eventToEdit.status}
+                    onChange={(e) => setEventToEdit({ ...eventToEdit, status: e.target.value as any })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500 bg-white"
+                  >
+                    <option value="Sắp diễn ra">Sắp diễn ra</option>
+                    <option value="Đang diễn ra">Đang diễn ra</option>
+                    <option value="Đã kết thúc">Đã kết thúc</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 block">Đơn vị / Đoàn thể tổ chức</label>
+                  <input 
+                    type="text" 
+                    value={eventToEdit.organizer}
+                    onChange={(e) => setEventToEdit({ ...eventToEdit, organizer: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 block">Số người dự kiến</label>
+                  <input 
+                    type="number" 
+                    value={eventToEdit.expectedAttendees}
+                    onChange={(e) => setEventToEdit({ ...eventToEdit, expectedAttendees: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600 block">Địa điểm *</label>
+                <input 
+                  type="text" 
+                  required
+                  value={eventToEdit.location}
+                  onChange={(e) => setEventToEdit({ ...eventToEdit, location: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600 block">Mô tả nội dung *</label>
+                <textarea 
+                  rows={3}
+                  required
+                  value={eventToEdit.description}
+                  onChange={(e) => setEventToEdit({ ...eventToEdit, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-teal-500"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex justify-end gap-2 text-xs">
+                <button 
+                  type="button" 
+                  onClick={() => setEventToEdit(null)}
+                  className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors font-semibold"
+                >
+                  Hủy
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 6: DELETE EVENT CONFIRMATION */}
+      {eventToDelete && (
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base">Xác nhận Xóa Sự kiện?</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Bạn có chắc chắn muốn xóa sự kiện <strong>"{eventToDelete.title}"</strong> không? Thao tác này không thể khôi phục.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2 text-xs font-bold">
+              <button 
+                onClick={() => setEventToDelete(null)}
+                className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={() => handleConfirmDeleteEvent(eventToDelete.id)}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors shadow-sm"
+              >
+                Đồng ý Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold flex items-center gap-2 animate-in slide-in-from-bottom-5 duration-200 ${
+          toast.type === "success" ? "bg-emerald-900 text-white border-emerald-700" : "bg-rose-900 text-white border-rose-700"
+        }`}>
+          <Sparkles size={16} className="text-amber-400" />
+          {toast.message}
         </div>
       )}
 
