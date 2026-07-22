@@ -949,9 +949,10 @@ export default function App() {
   };
 
   const handleDeleteResident = async (id: string) => {
-    const resToDelete = residents.find(r => r.id === id);
+    const resToDelete = residents.find(r => r.id === id || (r.cccd && r.cccd === id));
     if (!resToDelete) return;
 
+    const targetId = resToDelete.id;
     const hhCode = resToDelete.householdId;
     let nextHeadResToUpdate: Resident | null = null;
     let householdToSync: Household | null = null;
@@ -960,13 +961,13 @@ export default function App() {
     const updatedHouseholds = households.map(hh => {
       if (hh.code === hhCode) {
         const updatedMembers = (hh.members || []).filter(m => m.cccd !== resToDelete.cccd);
-        const wasHead = hh.headPersonId === id || resToDelete.relationToOwner === "Chủ hộ";
+        const wasHead = hh.headPersonId === targetId || resToDelete.relationToOwner === "Chủ hộ";
         
         let newHeadId: string | null = null;
         let newOwnerName = "Chưa xác định";
         
         if (wasHead && updatedMembers.length > 0) {
-          const headCandidate = residents.find(r => r.cccd === updatedMembers[0].cccd && r.id !== id);
+          const headCandidate = residents.find(r => r.cccd === updatedMembers[0].cccd && r.id !== targetId);
           if (headCandidate) {
             newHeadId = headCandidate.id;
             newOwnerName = headCandidate.fullName;
@@ -996,38 +997,52 @@ export default function App() {
     });
 
     // 2. Calculate updated residents
-    let updatedResidents = residents.filter(r => r.id !== id);
+    let updatedResidents = residents.filter(r => r.id !== targetId && r.cccd !== resToDelete.cccd);
     if (nextHeadResToUpdate) {
       const updatedHead = nextHeadResToUpdate;
       updatedResidents = updatedResidents.map(r => r.id === updatedHead.id ? updatedHead : r);
     }
 
-    // 3. Update React state sequentially (not nested)
+    // 3. Update React state immediately & store in LocalStorage for cross-session reactivity
     setResidents(updatedResidents);
     setHouseholds(updatedHouseholds);
+    try {
+      localStorage.setItem("kp_residents", JSON.stringify(updatedResidents));
+      localStorage.setItem("kp_households", JSON.stringify(updatedHouseholds));
+    } catch (e) {
+      console.error("LocalStorage write error:", e);
+    }
 
     // 4. Update Supabase
     if (isSupabaseConfigured && dbStatus === 'connected') {
       try {
+        const targetUuid = mapIdToUuid(targetId);
+
+        // Clear head_person_id in Household if referencing this person to prevent foreign key errors
+        await supabase
+          .from('Household')
+          .update({ head_person_id: null })
+          .or(`head_person_id.eq.${targetUuid},head_person_id.eq.${targetId}`);
+
         if (nextHeadResToUpdate) {
-          const { error: headErr } = await supabase.from('Person').upsert([mapResidentToDb(nextHeadResToUpdate, households)]);
-          if (headErr) {
-            console.error("Error updating new head of household in Supabase:", headErr);
-          }
+          await supabase.from('Person').upsert([mapResidentToDb(nextHeadResToUpdate, households)]);
         }
 
-        const { error: delErr } = await supabase.from('Person').delete().eq('id', id);
+        // Delete from Person table in Supabase
+        const { error: delErr } = await supabase
+          .from('Person')
+          .delete()
+          .or(`id.eq.${targetUuid},id.eq.${targetId}`);
+
         if (delErr) {
-          console.error("Error deleting resident from Supabase:", delErr);
-          alert(`Lỗi khi xóa cư dân khỏi Supabase: ${delErr.message}`);
-          return;
+          console.warn("Notice deleting resident from Supabase:", delErr.message);
+          if (resToDelete.cccd) {
+            await supabase.from('Person').delete().eq('idCard', resToDelete.cccd);
+          }
         }
         
         if (householdToSync) {
-          const { error: hhErr } = await supabase.from('Household').upsert(mapHouseholdToDb(householdToSync));
-          if (hhErr) {
-            console.error("Error updating household after deletion:", hhErr);
-          }
+          await supabase.from('Household').upsert(mapHouseholdToDb(householdToSync));
         }
       } catch (e) {
         console.error("Error deleting resident from Supabase:", e);

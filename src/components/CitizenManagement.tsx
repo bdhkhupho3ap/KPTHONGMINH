@@ -559,19 +559,21 @@ export default function CitizenManagement({
 
   // Delete all residents handler
   const handleDeleteAll = () => {
-    if (confirm("CẢNH BÁO NGUY HIỂM: Bạn có chắc chắn muốn xóa TOÀN BỘ cư dân khỏi hệ thống? Hành động này sẽ dọn sạch toàn bộ nhân khẩu và danh sách thành viên hộ khẩu.")) {
-      if (onUpdateResidents) {
-        onUpdateResidents([]);
-      }
-      if (onUpdateHouseholds) {
-        onUpdateHouseholds(households.map(hh => ({
-          ...hh,
-          memberCount: 0,
-          members: []
-        })));
-      }
-      setSelectedResident(null);
-      alert("Đã xóa toàn bộ cư dân và dọn sạch sổ hộ khẩu thành công!");
+    if (onUpdateResidents) {
+      onUpdateResidents([]);
+    }
+    if (onUpdateHouseholds) {
+      onUpdateHouseholds(households.map(hh => ({
+        ...hh,
+        memberCount: 0,
+        members: []
+      })));
+    }
+    setSelectedResident(null);
+    try {
+      localStorage.removeItem("kp_residents");
+    } catch (e) {
+      console.error(e);
     }
   };
 
