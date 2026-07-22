@@ -47,64 +47,99 @@ interface PartyBranchProps {
   residents?: Resident[];
 }
 
+const defaultAssociations: Association[] = [
+  {
+    id: "ASC001",
+    name: "Chi bộ Đảng (Đảng viên)",
+    category: "Chính trị - Xã hội",
+    description: "Tổ chức hạt nhân lãnh đạo chính trị tại cơ sở, đề ra chủ trương chỉ đạo các mặt đời sống xã hội.",
+    leaderName: "Nguyễn Văn Hùng",
+    leaderCccd: "079085001234",
+    members: [
+      { id: "M001", fullName: "Nguyễn Văn Hùng", role: "Bí thư Chi bộ", cccd: "079085001234", phone: "0903123456", birthDate: "15/04/1968" },
+      { id: "M002", fullName: "Trần Thị Mai", role: "Phó Bí thư", cccd: "079178002345", phone: "0912345678", birthDate: "20/08/1975" },
+      { id: "M003", fullName: "Lê Văn Nam", role: "Ủy viên ban chấp hành", cccd: "079082003456", phone: "0989112233", birthDate: "10/11/1980" }
+    ]
+  },
+  {
+    id: "ASC002",
+    name: "Lực lượng ANCS (An ninh cơ sở)",
+    category: "An ninh - Quốc phòng",
+    description: "Lực lượng nòng cốt bảo vệ an ninh trật tự, tuần tra, giữ gìn bình yên các tuyến hẻm nội khu.",
+    leaderName: "Phạm Văn Đồng",
+    leaderCccd: "079075004567",
+    members: [
+      { id: "M004", fullName: "Phạm Văn Đồng", role: "Tổ trưởng ANCS", cccd: "079075004567", phone: "0908776655", birthDate: "05/02/1972" },
+      { id: "M005", fullName: "Nguyễn Thị Hoa", role: "Đội viên ANCS", cccd: "079188005678", phone: "0933445566", birthDate: "12/06/1985" }
+    ]
+  },
+  {
+    id: "ASC003",
+    name: "Lực lượng dân quân tự vệ",
+    category: "An ninh - Quốc phòng",
+    description: "Thực hiện nhiệm vụ sẵn sàng chiến đấu, khắc phục thiên tai, cứu hộ cứu nạn và bảo vệ chính quyền.",
+    leaderName: "Trần Quốc Tuấn",
+    leaderCccd: "079090006789",
+    members: [
+      { id: "M006", fullName: "Trần Quốc Tuấn", role: "Chỉ huy trưởng DQTV", cccd: "079090006789", phone: "0977889900", birthDate: "18/09/1988" },
+      { id: "M007", fullName: "Võ Văn Kiệt", role: "Chiến sĩ dân quân", cccd: "079095007890", phone: "0966554433", birthDate: "25/12/1995" }
+    ]
+  },
+  {
+    id: "ASC004",
+    name: "Đoàn viên thanh niên (Chi đoàn KP3)",
+    category: "Đoàn thể nhân dân",
+    description: "Chi đoàn Thanh niên Cộng sản Hồ Chí Minh Khu phố 3, dẫn đầu các hoạt động văn hóa, chuyển đổi số.",
+    leaderName: "Nguyễn Thị Vy",
+    leaderCccd: "079198008901",
+    members: [
+      { id: "M008", fullName: "Nguyễn Thị Vy", role: "Bí thư Chi đoàn", cccd: "079198008901", phone: "0944332211", birthDate: "30/03/1998" },
+      { id: "M009", fullName: "Phạm Minh Đức", role: "Đoàn viên", cccd: "079099009012", phone: "0911223344", birthDate: "14/07/2001" }
+    ]
+  },
+  {
+    id: "ASC005",
+    name: "Chi hội Cựu chiến binh (CCB)",
+    category: "Đoàn thể nhân dân",
+    description: "Hội cựu chiến binh gương mẫu bảo vệ Đảng, chính quyền, giáo dục truyền thống cách mạng cho thế hệ trẻ.",
+    leaderName: "Trần Văn Bình",
+    leaderCccd: "079060010123",
+    members: [
+      { id: "M010", fullName: "Trần Văn Bình", role: "Chi hội trưởng", cccd: "079060010123", phone: "0989123456", birthDate: "08/01/1960" }
+    ]
+  },
+  {
+    id: "ASC006",
+    name: "Chi hội Phụ nữ",
+    category: "Đoàn thể nhân dân",
+    description: "Vận động phụ nữ tham gia phát triển kinh tế xã hội, bảo vệ quyền lợi hợp pháp và hạnh phúc gia đình.",
+    leaderName: "Lê Thị Vân",
+    leaderCccd: "079170011234",
+    members: [
+      { id: "M011", fullName: "Lê Thị Vân", role: "Chi hội trưởng", cccd: "079170011234", phone: "0912345678", birthDate: "11/05/1970" }
+    ]
+  }
+];
+
 export default function PartyBranch({ partyMembers, residents = [] }: PartyBranchProps) {
-  // Pre-populated default associations (Chi hội) matching the user requirements
-  const [associations, setAssociations] = useState<Association[]>([
-    {
-      id: "ASC001",
-      name: "Chi bộ Đảng (Đảng viên)",
-      category: "Chính trị - Xã hội",
-      description: "Tổ chức hạt nhân lãnh đạo chính trị tại cơ sở, đề ra chủ trương chỉ đạo các mặt đời sống xã hội.",
-      leaderName: "",
-      leaderCccd: "",
-      members: []
-    },
-    {
-      id: "ASC002",
-      name: "Lực lượng ANCS (An ninh cơ sở)",
-      category: "An ninh - Quốc phòng",
-      description: "Lực lượng nòng cốt bảo vệ an ninh trật tự, tuần tra, giữ gìn bình yên các tuyến hẻm nội khu.",
-      leaderName: "",
-      leaderCccd: "",
-      members: []
-    },
-    {
-      id: "ASC003",
-      name: "Lực lượng dân quân tự vệ",
-      category: "An ninh - Quốc phòng",
-      description: "Thực hiện nhiệm vụ sẵn sàng chiến đấu, khắc phục thiên tai, cứu hộ cứu nạn và bảo vệ chính quyền.",
-      leaderName: "",
-      leaderCccd: "",
-      members: []
-    },
-    {
-      id: "ASC004",
-      name: "Đoàn viên thanh niên (Chi đoàn KP3)",
-      category: "Đoàn thể nhân dân",
-      description: "Chi đoàn Thanh niên Cộng sản Hồ Chí Minh Khu phố 3, dẫn đầu các hoạt động văn hóa, chuyển đổi số.",
-      leaderName: "",
-      leaderCccd: "",
-      members: []
-    },
-    {
-      id: "ASC005",
-      name: "Chi hội Cựu chiến binh (CCB)",
-      category: "Đoàn thể nhân dân",
-      description: "Hội cựu chiến binh gương mẫu bảo vệ Đảng, chính quyền, giáo dục truyền thống cách mạng cho thế hệ trẻ.",
-      leaderName: "",
-      leaderCccd: "",
-      members: []
-    },
-    {
-      id: "ASC006",
-      name: "Chi hội Phụ nữ",
-      category: "Đoàn thể nhân dân",
-      description: "Vận động phụ nữ tham gia phát triển kinh tế xã hội, bảo vệ quyền lợi hợp pháp và hạnh phúc gia đình.",
-      leaderName: "",
-      leaderCccd: "",
-      members: []
+  // Pre-populated default associations (Chi hội) with LocalStorage persistence
+  const [associations, setAssociations] = useState<Association[]>(() => {
+    const saved = localStorage.getItem("kp_associations");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {
+        console.error("Failed to parse saved associations:", e);
+      }
     }
-  ]);
+    return defaultAssociations;
+  });
+
+  // Sync to LocalStorage
+  React.useEffect(() => {
+    localStorage.setItem("kp_associations", JSON.stringify(associations));
+  }, [associations]);
 
   const [selectedAssociationId, setSelectedAssociationId] = useState<string>("ASC001");
   const [searchTerm, setSearchTerm] = useState("");
@@ -145,16 +180,23 @@ export default function PartyBranch({ partyMembers, residents = [] }: PartyBranc
   // State for creating new Association
   const [showAddAssocModal, setShowAddAssocModal] = useState(false);
   const [newAssocName, setNewAssocName] = useState("");
-  const [newAssocCategory, setNewAssocCategory] = useState<"Chính trị - Xã hội" | "An ninh - Quốc phòng" | "Đoàn thể nhân dân" | "Hội quần chúng">("Đoàn thể nhân dân");
+  const [newAssocCategory, setNewAssocCategory] = useState<Association["category"]>("Đoàn thể nhân dân");
   const [newAssocDesc, setNewAssocDesc] = useState("");
   const [newAssocLeaderCccd, setNewAssocLeaderCccd] = useState("");
   const [newAssocLeaderRole, setNewAssocLeaderRole] = useState("Chi hội trưởng");
 
-  // State for adding a member from Residents database
+  // State for adding a member
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [addMemberMode, setAddMemberMode] = useState<"select" | "custom">("select");
   const [selectedResidentCccd, setSelectedResidentCccd] = useState("");
   const [memberRole, setMemberRole] = useState("Hội viên");
   const [residentSearchTerm, setResidentSearchTerm] = useState("");
+
+  // States for custom member input
+  const [customFullName, setCustomFullName] = useState("");
+  const [customCccd, setCustomCccd] = useState("");
+  const [customPhone, setCustomPhone] = useState("");
+  const [customBirthDate, setCustomBirthDate] = useState("");
 
   // Create new Association
   const handleCreateAssociation = (e: React.FormEvent) => {
@@ -200,40 +242,65 @@ export default function PartyBranch({ partyMembers, residents = [] }: PartyBranc
     setNewAssocLeaderRole("Chi hội trưởng");
   };
 
-  // Add a member from the existing Residents database
-  const handleAddMemberFromResidents = () => {
-    if (!selectedResidentCccd) {
-      showToast("Vui lòng chọn một cư dân từ danh sách!", "error");
-      return;
+  // Add a member (supports both resident selection and custom input)
+  const handleAddMember = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    let newMember: AssociationMember;
+
+    if (addMemberMode === "select") {
+      if (!selectedResidentCccd) {
+        showToast("Vui lòng chọn một cư dân từ danh sách!", "error");
+        return;
+      }
+
+      // Check if already member
+      const alreadyMember = selectedAssociation.members.some(m => m.cccd === selectedResidentCccd);
+      if (alreadyMember) {
+        showToast("Cư dân này đã là thành viên của chi hội này!", "error");
+        return;
+      }
+
+      const residentObj = residents.find(r => r.cccd === selectedResidentCccd);
+      if (!residentObj) return;
+
+      newMember = {
+        id: "M" + Date.now(),
+        fullName: residentObj.fullName,
+        role: memberRole,
+        cccd: residentObj.cccd,
+        phone: residentObj.phone || "N/A",
+        birthDate: residentObj.birthDate
+      };
+    } else {
+      if (!customFullName.trim() || !customCccd.trim()) {
+        showToast("Vui lòng điền đầy đủ Họ tên và Số CCCD!", "error");
+        return;
+      }
+
+      const alreadyMember = selectedAssociation.members.some(m => m.cccd === customCccd.trim());
+      if (alreadyMember) {
+        showToast("Số CCCD này đã tồn tại trong chi hội!", "error");
+        return;
+      }
+
+      newMember = {
+        id: "M" + Date.now(),
+        fullName: customFullName.trim(),
+        role: memberRole,
+        cccd: customCccd.trim(),
+        phone: customPhone.trim() || "N/A",
+        birthDate: customBirthDate.trim() || undefined
+      };
     }
-
-    // Check if the resident is already a member of this Association
-    const alreadyMember = selectedAssociation.members.some(m => m.cccd === selectedResidentCccd);
-    if (alreadyMember) {
-      showToast("Cư dân này đã là thành viên của chi hội này!", "error");
-      return;
-    }
-
-    const residentObj = residents.find(r => r.cccd === selectedResidentCccd);
-    if (!residentObj) return;
-
-    const newMember: AssociationMember = {
-      id: "M" + Date.now(),
-      fullName: residentObj.fullName,
-      role: memberRole,
-      cccd: residentObj.cccd,
-      phone: residentObj.phone || "N/A",
-      birthDate: residentObj.birthDate
-    };
 
     const updatedMembers = [...selectedAssociation.members, newMember];
-    
-    // Check if the role is a main leader role and we want to auto-assign leadership
+
     let updatedLeaderName = selectedAssociation.leaderName;
     let updatedLeaderCccd = selectedAssociation.leaderCccd;
-    if (["Bí thư", "Chi hội trưởng", "Tổ trưởng", "Chỉ huy trưởng"].includes(memberRole)) {
-      updatedLeaderName = residentObj.fullName;
-      updatedLeaderCccd = residentObj.cccd;
+    if (["Bí thư", "Chi hội trưởng", "Tổ trưởng", "Chỉ huy trưởng"].includes(memberRole) || !selectedAssociation.leaderName || selectedAssociation.leaderName === "Chưa xác định") {
+      updatedLeaderName = newMember.fullName;
+      updatedLeaderCccd = newMember.cccd;
     }
 
     const updatedAssociation: Association = {
@@ -895,57 +962,133 @@ export default function PartyBranch({ partyMembers, residents = [] }: PartyBranc
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-150">
             <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
               <div>
-                <h3 className="font-bold text-sm">Ghi danh cư dân vào Chi hội</h3>
+                <h3 className="font-bold text-sm">Ghi danh thành viên vào Chi hội</h3>
                 <p className="text-[10px] text-slate-300 mt-0.5">Chi hội: {selectedAssociation.name}</p>
               </div>
               <button 
+                type="button"
                 onClick={() => setShowAddMemberModal(false)}
                 className="text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
                 <X size={20} />
               </button>
             </div>
-            
-            <div className="p-4 space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-600 block">Tìm kiếm cư dân từ dữ liệu Dân cư</label>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                  <input 
-                    type="text"
-                    placeholder="Nhập tên hoặc CCCD để tìm kiếm..."
-                    value={residentSearchTerm}
-                    onChange={(e) => setResidentSearchTerm(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-600 block">Chọn cư dân ghi danh *</label>
-                <select
-                  value={selectedResidentCccd}
-                  onChange={(e) => setSelectedResidentCccd(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:border-emerald-500"
-                >
-                  <option value="">-- Chọn thành viên dân cư ({searchedResidents.length}) --</option>
-                  {searchedResidents.map(r => (
-                    <option key={r.cccd} value={r.cccd}>
-                      {r.fullName} - CCCD: {r.cccd} ({r.occupation})
-                    </option>
-                  ))}
-                </select>
-                {searchedResidents.length === 0 && (
-                  <span className="text-[10px] text-rose-500 block">Không tìm thấy cư dân nào hợp lệ chưa tham gia.</span>
-                )}
-              </div>
+            {/* Mode selection tabs */}
+            <div className="flex border-b border-slate-200 bg-slate-50/70">
+              <button
+                type="button"
+                onClick={() => setAddMemberMode("select")}
+                className={`flex-1 py-2.5 text-xs font-bold border-b-2 cursor-pointer transition-colors ${
+                  addMemberMode === "select" ? "border-emerald-600 text-emerald-700 bg-white" : "border-transparent text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                Chọn từ Dân cư có sẵn
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddMemberMode("custom")}
+                className={`flex-1 py-2.5 text-xs font-bold border-b-2 cursor-pointer transition-colors ${
+                  addMemberMode === "custom" ? "border-emerald-600 text-emerald-700 bg-white" : "border-transparent text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                + Nhập thông tin trực tiếp
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddMember} className="p-5 space-y-4">
+              {addMemberMode === "select" ? (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 block">Tìm kiếm cư dân từ dữ liệu Dân cư</label>
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                      <input 
+                        type="text"
+                        placeholder="Nhập tên hoặc CCCD để tìm..."
+                        value={residentSearchTerm}
+                        onChange={(e) => setResidentSearchTerm(e.target.value)}
+                        className="w-full pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 block">Chọn cư dân ghi danh *</label>
+                    <select
+                      value={selectedResidentCccd}
+                      onChange={(e) => setSelectedResidentCccd(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:border-emerald-500 font-semibold"
+                    >
+                      <option value="">-- Chọn thành viên dân cư ({searchedResidents.length}) --</option>
+                      {searchedResidents.map(r => (
+                        <option key={r.cccd} value={r.cccd}>
+                          {r.fullName} - CCCD: {r.cccd} ({r.occupation || "Cư dân"})
+                        </option>
+                      ))}
+                    </select>
+                    {searchedResidents.length === 0 && (
+                      <span className="text-[10px] text-rose-500 block font-medium">Không tìm thấy cư dân nào hợp lệ chưa tham gia. Bạn có thể chuyển sang tab "Nhập thông tin trực tiếp" ở trên.</span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 block">Họ và tên thành viên *</label>
+                    <input 
+                      type="text" 
+                      required
+                      placeholder="Ví dụ: Nguyễn Văn An"
+                      value={customFullName}
+                      onChange={(e) => setCustomFullName(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-500 font-bold"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-600 block">Số CCCD / ĐDCN *</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="12 chữ số..."
+                        value={customCccd}
+                        onChange={(e) => setCustomCccd(e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-500 font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-600 block">Số điện thoại liên hệ</label>
+                      <input 
+                        type="text" 
+                        placeholder="0901234567..."
+                        value={customPhone}
+                        onChange={(e) => setCustomPhone(e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-500 font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 block">Ngày sinh / Năm sinh</label>
+                    <input 
+                      type="text" 
+                      placeholder="dd/mm/yyyy (ví dụ: 15/05/1985)"
+                      value={customBirthDate}
+                      onChange={(e) => setCustomBirthDate(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Vai trò / Chức vụ trong Chi hội</label>
                 <select
                   value={memberRole}
                   onChange={(e) => setMemberRole(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:border-emerald-500 font-semibold text-emerald-800"
                 >
                   <option value="Hội viên">Hội viên</option>
                   <option value="Hội viên tích cực">Hội viên tích cực</option>
@@ -953,13 +1096,17 @@ export default function PartyBranch({ partyMembers, residents = [] }: PartyBranc
                   <option value="Phó Bí thư">Phó Bí thư</option>
                   <option value="Chi hội phó">Chi hội phó</option>
                   <option value="Chi hội trưởng">Chi hội trưởng</option>
+                  <option value="Bí thư Chi bộ">Bí thư Chi bộ</option>
+                  <option value="Tổ trưởng ANCS">Tổ trưởng ANCS</option>
                   <option value="Đội viên ANCS">Đội viên ANCS</option>
+                  <option value="Chỉ huy trưởng DQTV">Chỉ huy trưởng DQTV</option>
                   <option value="Chiến sĩ dân quân">Chiến sĩ dân quân</option>
+                  <option value="Bí thư Chi đoàn">Bí thư Chi đoàn</option>
                   <option value="Đoàn viên">Đoàn viên</option>
                   <option value="Khác">Khác</option>
                 </select>
                 <p className="text-[10px] text-slate-400 mt-1 leading-normal">
-                  * Nếu chọn chức vụ đứng đầu (Chi hội trưởng, Tổ trưởng...), chức danh Trưởng chi hội sẽ được tự động cập nhật.
+                  * Nếu chọn chức vụ đứng đầu (Bí thư, Chi hội trưởng, Tổ trưởng...), lãnh đạo đại diện của Chi hội sẽ tự động cập nhật.
                 </p>
               </div>
 
@@ -967,20 +1114,18 @@ export default function PartyBranch({ partyMembers, residents = [] }: PartyBranc
                 <button
                   type="button"
                   onClick={() => setShowAddMemberModal(false)}
-                  className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-lg text-xs text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer font-medium"
                 >
                   Hủy bỏ
                 </button>
                 <button
-                  type="button"
-                  onClick={handleAddMemberFromResidents}
-                  disabled={!selectedResidentCccd}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold rounded-lg text-xs transition-colors cursor-pointer"
+                  type="submit"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer shadow-sm"
                 >
-                  Ghi danh thành viên
+                  Ghi danh & Lưu vào Chi hội
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}
