@@ -190,36 +190,42 @@ export default function CitizenManagement({
 
   // Download Sample Excel Template
   const downloadTemplate = () => {
-    const headers = [
+    const sampleRows = [
       {
-        "Họ và Tên": "Nguyễn Văn A",
-        "Số CCCD": "079095012345",
+        "STT": 1,
+        "Họ và tên": "NGUYỄN QUỐC THẮNG",
+        "Ngày sinh": "18/11/1965",
         "Giới tính": "Nam",
-        "Ngày sinh": "15/08/1995",
-        "Số điện thoại": "0901234567",
-        "Diện cư trú": "Thường trú",
-        "Nghề nghiệp": "Kỹ sư",
-        "Địa chỉ": "42 Lương Định Của, Phường An Phú",
-        "Mã hộ khẩu": "HK-301",
-        "Quan hệ với chủ hộ": "Con trai"
+        "Số ĐDCN/CCCD/CMND": "079065023570",
+        "Họ và tên chủ hộ": "PHAN NGỌC MỚI",
+        "Nơi thường trú": "16/A6 Khu Phố 3, Phường An Phú, Thành phố Hồ Chí Minh",
+        "Khu phố": "Khu phố 3",
+        "Ngày ĐKTT": "23/04/2005",
+        "Nơi ở hiện tại": "16/A6 Khu Phố 3, Phường An Phú, Thành phố Hồ Chí Minh",
+        "Diện cư trú": "Đang thường trú",
+        "Thẻ bhyt": "GD4797422349250",
+        "GT đến": "01/09/2026"
       },
       {
-        "Họ và Tên": "Trần Thị B",
-        "Số CCCD": "079198005432",
+        "STT": 2,
+        "Họ và tên": "NGUYỄN THỊ NGỌC TỐ NGA",
+        "Ngày sinh": "31/05/1985",
         "Giới tính": "Nữ",
-        "Ngày sinh": "20/12/1998",
-        "Số điện thoại": "0912345678",
-        "Diện cư trú": "Tạm trú",
-        "Nghề nghiệp": "Sinh viên",
-        "Địa chỉ": "78 Đường 36, Phường An Phú",
-        "Mã hộ khẩu": "HK-302",
-        "Quan hệ với chủ hộ": "Chủ hộ"
+        "Số ĐDCN/CCCD/CMND": "079185015350",
+        "Họ và tên chủ hộ": "PHAN NGỌC MỚI",
+        "Nơi thường trú": "16/A6 Khu Phố 3, Phường An Phú, Thành phố Hồ Chí Minh",
+        "Khu phố": "Khu phố 3",
+        "Ngày ĐKTT": "23/04/2005",
+        "Nơi ở hiện tại": "16/A6 Khu Phố 3, Phường An Phú, Thành phố Hồ Chí Minh",
+        "Diện cư trú": "Đang thường trú",
+        "Thẻ bhyt": "SV4797423531277",
+        "GT đến": "31/12/2026"
       }
     ];
-    const worksheet = XLSX.utils.json_to_sheet(headers);
+    const worksheet = XLSX.utils.json_to_sheet(sampleRows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Danh sach cu dan");
-    XLSX.writeFile(workbook, "Mau_Danh_Sach_Cu_Dan_KP3.xlsx");
+    XLSX.writeFile(workbook, "Mau_Danh_Sach_Cu_Dan_Thuong_Tru.xlsx");
   };
 
   // Helper to parse Excel dates (handles serial numbers like 29229 and string dates)
@@ -431,8 +437,8 @@ export default function CitizenManagement({
           // Tạm trú layout (10 columns)
           headers = ["STT", "Tên", "Ngày sinh", "Giới tính", "CCCD", "Địa chỉ tạm trú", "Khu phố", "Địa chỉ thường trú", "Thẻ bhyt", "GT đến"];
         } else {
-          // Thường trú layout (12 columns)
-          headers = ["STT", "Họ và tên", "Ngày sinh", "Giới tính", "Số ĐDCN/CCCD/CMND", "Họ và tên chủ hộ", "Nơi thường trú", "Khu phố", "Ngày ĐKTT", "Nơi ở hiện tại", "Thẻ bhyt", "GT đến"];
+          // Thường trú layout (13 columns matching official Excel sheet)
+          headers = ["STT", "Họ và tên", "Ngày sinh", "Giới tính", "Số ĐDCN/CCCD/CMND", "Họ và tên chủ hộ", "Nơi thường trú", "Khu phố", "Ngày ĐKTT", "Nơi ở hiện tại", "Diện cư trú", "Thẻ bhyt", "GT đến"];
         }
       } else {
         // First row is header row
@@ -1463,7 +1469,7 @@ export default function CitizenManagement({
                         <div className="flex items-center gap-3">
                           <div className="p-1.5 bg-slate-50 rounded text-slate-400"><Milestone size={14} className="text-blue-500" /></div>
                           <div className="flex-1">
-                            <span className="text-[10px] text-slate-400 block">Giấy giới thiệu đến (GT đến)</span>
+                            <span className="text-[10px] text-slate-400 block">Thời hạn BHYT / Hạn dùng (GT đến)</span>
                             <span className="text-slate-800 font-medium">
                               {sanitizedIns.gtDen || "Chưa cập nhật"}
                             </span>
