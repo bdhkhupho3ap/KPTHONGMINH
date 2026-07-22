@@ -1,0 +1,6 @@
+{
+  "name": "Khu phố 3 An Phú - Quản lý thông minh",
+  "description": "Hệ thống quản lý thông minh hành chính địa phương và dân cư tại Khu phố 3, Phường An Phú. Bao gồm các tính năng quản lý dân cư, kinh doanh, bản đồ GIS, Trợ lý AI và tiếp nhận phản ánh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

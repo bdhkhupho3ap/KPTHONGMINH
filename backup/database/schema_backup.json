@@ -1,0 +1,2644 @@
+{
+  "household_members": {
+    "required": [
+      "id",
+      "relation_to_owner"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "household_id": {
+        "description": "Note:\nThis is a Foreign Key to `households.id`.<fk table='households' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "relation_to_owner": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "joined_at": {
+        "default": "CURRENT_DATE",
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "users": {
+    "required": [
+      "id",
+      "username",
+      "email",
+      "password_hash"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "username": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "email": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "password_hash": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "is_active": {
+        "default": true,
+        "format": "boolean",
+        "type": "boolean"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "gis_points": {
+    "required": [
+      "id",
+      "title",
+      "lat",
+      "lng"
+    ],
+    "properties": {
+      "id": {
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "text",
+        "type": "string"
+      },
+      "title": {
+        "format": "text",
+        "type": "string"
+      },
+      "lat": {
+        "format": "double precision",
+        "type": "number"
+      },
+      "lng": {
+        "format": "double precision",
+        "type": "number"
+      },
+      "type": {
+        "default": "household",
+        "format": "text",
+        "type": "string"
+      },
+      "icon": {
+        "format": "text",
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      },
+      "address": {
+        "format": "text",
+        "type": "string"
+      },
+      "notes": {
+        "format": "text",
+        "type": "string"
+      },
+      "status": {
+        "default": "active",
+        "format": "text",
+        "type": "string"
+      },
+      "image": {
+        "format": "text",
+        "type": "string"
+      },
+      "is_deleted": {
+        "default": false,
+        "format": "boolean",
+        "type": "boolean"
+      },
+      "created_by": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "updated_by": {
+        "format": "text",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "attachments": {
+    "required": [
+      "id",
+      "entity_type",
+      "entity_id",
+      "file_path"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "entity_type": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "entity_id": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "file_path": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "file_type": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "file_size": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "role_permissions": {
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "role_id": {
+        "description": "Note:\nThis is a Foreign Key to `roles.id`.<fk table='roles' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "permission_id": {
+        "description": "Note:\nThis is a Foreign Key to `permissions.id`.<fk table='permissions' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "plans": {
+    "required": [
+      "id",
+      "title"
+    ],
+    "properties": {
+      "id": {
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "text",
+        "type": "string"
+      },
+      "title": {
+        "format": "text",
+        "type": "string"
+      },
+      "deadline": {
+        "format": "text",
+        "type": "string"
+      },
+      "status": {
+        "default": "Chưa bắt đầu",
+        "format": "text",
+        "type": "string"
+      },
+      "aiContent": {
+        "format": "text",
+        "type": "string"
+      },
+      "attachedFile": {
+        "format": "jsonb"
+      },
+      "created_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "temporary_residence": {
+    "required": [
+      "id",
+      "start_date",
+      "end_date"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "household_id": {
+        "description": "Note:\nThis is a Foreign Key to `households.id`.<fk table='households' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "registration_number": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "boarding_rooms": {
+    "required": [
+      "id",
+      "room_number",
+      "price"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "boarding_house_id": {
+        "description": "Note:\nThis is a Foreign Key to `boarding_houses.id`.<fk table='boarding_houses' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "room_number": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "price": {
+        "format": "numeric",
+        "type": "number"
+      },
+      "max_tenants": {
+        "default": 4,
+        "format": "integer",
+        "type": "integer"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "officer_evaluations": {
+    "required": [
+      "id",
+      "year",
+      "rating"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "officer_id": {
+        "description": "Note:\nThis is a Foreign Key to `officers.id`.<fk table='officers' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "year": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "rating": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "achievements": {
+        "format": "text",
+        "type": "string"
+      },
+      "feedback": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "fund_contributions": {
+    "required": [
+      "id",
+      "household_code",
+      "owner_name",
+      "amount"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "household_code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "owner_name": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "fund_name": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "amount": {
+        "format": "numeric",
+        "type": "number"
+      },
+      "status": {
+        "default": "Chưa nộp",
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "paid_at": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "notifications": {
+    "required": [
+      "id",
+      "title",
+      "content"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "user_id": {
+        "description": "Note:\nThis is a Foreign Key to `users.id`.<fk table='users' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "content": {
+        "format": "text",
+        "type": "string"
+      },
+      "is_read": {
+        "default": false,
+        "format": "boolean",
+        "type": "boolean"
+      },
+      "send_type": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "user_roles": {
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "user_id": {
+        "description": "Note:\nThis is a Foreign Key to `users.id`.<fk table='users' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "role_id": {
+        "description": "Note:\nThis is a Foreign Key to `roles.id`.<fk table='roles' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "khu_vuc": {
+    "required": [
+      "id",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "geometry_columns": {
+    "properties": {
+      "f_table_catalog": {
+        "format": "character varying",
+        "maxLength": 256,
+        "type": "string"
+      },
+      "f_table_schema": {
+        "format": "name",
+        "type": "string"
+      },
+      "f_table_name": {
+        "format": "name",
+        "type": "string"
+      },
+      "f_geometry_column": {
+        "format": "name",
+        "type": "string"
+      },
+      "coord_dimension": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "srid": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "type": {
+        "format": "character varying",
+        "maxLength": 30,
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "residents": {
+    "required": [
+      "id",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "text",
+        "type": "string"
+      },
+      "name": {
+        "format": "text",
+        "type": "string"
+      },
+      "dob": {
+        "format": "text",
+        "type": "string"
+      },
+      "gender": {
+        "format": "text",
+        "type": "string"
+      },
+      "idCard": {
+        "format": "text",
+        "type": "string"
+      },
+      "address": {
+        "format": "text",
+        "type": "string"
+      },
+      "neighborhoodGroup": {
+        "format": "text",
+        "type": "string"
+      },
+      "status": {
+        "default": "Thường trú",
+        "format": "text",
+        "type": "string"
+      },
+      "phone": {
+        "format": "text",
+        "type": "string"
+      },
+      "occupation": {
+        "format": "text",
+        "type": "string"
+      },
+      "note": {
+        "format": "text",
+        "type": "string"
+      },
+      "classifications": {
+        "format": "jsonb"
+      },
+      "giftHistory": {
+        "format": "jsonb"
+      },
+      "householdId": {
+        "format": "text",
+        "type": "string"
+      },
+      "partyJoinDate": {
+        "format": "text",
+        "type": "string"
+      },
+      "partyOfficialDate": {
+        "format": "text",
+        "type": "string"
+      },
+      "partyPosition": {
+        "format": "text",
+        "type": "string"
+      },
+      "partyStatus": {
+        "format": "text",
+        "type": "string"
+      },
+      "groupJoinDate": {
+        "format": "text",
+        "type": "string"
+      },
+      "groupOfficialDate": {
+        "format": "text",
+        "type": "string"
+      },
+      "groupPosition": {
+        "format": "text",
+        "type": "string"
+      },
+      "groupStatus": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "local_news": {
+    "required": [
+      "id",
+      "news_code",
+      "title",
+      "author",
+      "content"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "news_code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "category": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "published_date": {
+        "default": "CURRENT_DATE",
+        "format": "date",
+        "type": "string"
+      },
+      "author": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "content": {
+        "format": "text",
+        "type": "string"
+      },
+      "is_pinned": {
+        "default": false,
+        "format": "boolean",
+        "type": "boolean"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "party_meetings": {
+    "required": [
+      "id",
+      "title",
+      "date_time",
+      "location"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "date_time": {
+        "format": "timestamp without time zone",
+        "type": "string"
+      },
+      "location": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "audit_logs": {
+    "required": [
+      "id",
+      "action",
+      "table_name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "user_id": {
+        "description": "Note:\nThis is a Foreign Key to `users.id`.<fk table='users' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "action": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "table_name": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "record_id": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "old_data": {
+        "format": "jsonb"
+      },
+      "new_data": {
+        "format": "jsonb"
+      },
+      "ip_address": {
+        "format": "character varying",
+        "maxLength": 45,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "households": {
+    "required": [
+      "id",
+      "household_code",
+      "owner_name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "household_code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "owner_name": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "dia_chi_so_id": {
+        "description": "Note:\nThis is a Foreign Key to `dia_chi_so.id`.<fk table='dia_chi_so' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "type": {
+        "default": "Thường trú",
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "temporary_absence": {
+    "required": [
+      "id",
+      "leave_date",
+      "destination_address"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "leave_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "return_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "destination_address": {
+        "format": "text",
+        "type": "string"
+      },
+      "reason": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "beneficiaries": {
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "category": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "base_allowance": {
+        "default": 0,
+        "format": "numeric",
+        "type": "number"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "party_assignments": {
+    "required": [
+      "id",
+      "task_description",
+      "start_date"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "party_member_id": {
+        "description": "Note:\nThis is a Foreign Key to `party_members.id`.<fk table='party_members' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "task_description": {
+        "format": "text",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "incident_categories": {
+    "required": [
+      "id",
+      "code",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "officers": {
+    "required": [
+      "id",
+      "officer_code",
+      "joining_date"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "officer_code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "joining_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "organization_activities": {
+    "required": [
+      "id",
+      "title",
+      "activity_date",
+      "location"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "chapter_id": {
+        "description": "Note:\nThis is a Foreign Key to `chapters.id`.<fk table='chapters' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "activity_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "location": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "boarding_houses": {
+    "required": [
+      "id",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "owner_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "address_id": {
+        "description": "Note:\nThis is a Foreign Key to `dia_chi_so.id`.<fk table='dia_chi_so' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "rooms_count": {
+        "default": 0,
+        "format": "integer",
+        "type": "integer"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "business_types": {
+    "required": [
+      "id",
+      "code",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "meetings": {
+    "required": [
+      "id",
+      "title"
+    ],
+    "properties": {
+      "id": {
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "text",
+        "type": "string"
+      },
+      "title": {
+        "format": "text",
+        "type": "string"
+      },
+      "dateTime": {
+        "format": "text",
+        "type": "string"
+      },
+      "location": {
+        "format": "text",
+        "type": "string"
+      },
+      "status": {
+        "default": "Sắp diễn ra",
+        "format": "text",
+        "type": "string"
+      },
+      "summary": {
+        "format": "text",
+        "type": "string"
+      },
+      "aiSuggestions": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "geography_columns": {
+    "properties": {
+      "f_table_catalog": {
+        "format": "name",
+        "type": "string"
+      },
+      "f_table_schema": {
+        "format": "name",
+        "type": "string"
+      },
+      "f_table_name": {
+        "format": "name",
+        "type": "string"
+      },
+      "f_geography_column": {
+        "format": "name",
+        "type": "string"
+      },
+      "coord_dimension": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "srid": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "type": {
+        "format": "text",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "roles": {
+    "required": [
+      "id",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "social_programs": {
+    "required": [
+      "id",
+      "title"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "sponsor": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "budget": {
+        "default": 0,
+        "format": "numeric",
+        "type": "number"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "party_resolutions": {
+    "required": [
+      "id",
+      "title",
+      "content",
+      "publish_date"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "meeting_id": {
+        "description": "Note:\nThis is a Foreign Key to `party_meetings.id`.<fk table='party_meetings' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "resolution_code": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "content": {
+        "format": "text",
+        "type": "string"
+      },
+      "publish_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "support_records": {
+    "required": [
+      "id",
+      "support_type",
+      "value"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "beneficiary_id": {
+        "description": "Note:\nThis is a Foreign Key to `beneficiaries.id`.<fk table='beneficiaries' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "program_id": {
+        "description": "Note:\nThis is a Foreign Key to `social_programs.id`.<fk table='social_programs' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "receive_date": {
+        "default": "CURRENT_DATE",
+        "format": "date",
+        "type": "string"
+      },
+      "support_type": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "value": {
+        "format": "numeric",
+        "type": "number"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "organizations": {
+    "required": [
+      "id",
+      "code",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "system_health": {
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "last_ping": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "status": {
+        "default": "online",
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp with time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "party_members": {
+    "required": [
+      "id",
+      "card_number",
+      "join_date",
+      "cell_group"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "card_number": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "position": {
+        "default": "Đảng viên",
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "join_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "cell_group": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "fund_expenditures": {
+    "required": [
+      "id",
+      "title",
+      "amount",
+      "spent_at",
+      "receiver",
+      "approved_by"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "fund_name": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "amount": {
+        "format": "numeric",
+        "type": "number"
+      },
+      "spent_at": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "receiver": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "evidence": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "approved_by": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "keepalive_logs": {
+    "required": [
+      "id",
+      "status",
+      "response_time_ms"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "pinged_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "response_time_ms": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "error_message": {
+        "format": "text",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "incident_status": {
+    "required": [
+      "id",
+      "code",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "tenants": {
+    "required": [
+      "id",
+      "rent_start_date"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "room_id": {
+        "description": "Note:\nThis is a Foreign Key to `boarding_rooms.id`.<fk table='boarding_rooms' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "rent_start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "rent_end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "spatial_ref_sys": {
+    "required": [
+      "srid"
+    ],
+    "properties": {
+      "srid": {
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "integer",
+        "type": "integer"
+      },
+      "auth_name": {
+        "format": "character varying",
+        "maxLength": 256,
+        "type": "string"
+      },
+      "auth_srid": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "srtext": {
+        "format": "character varying",
+        "maxLength": 2048,
+        "type": "string"
+      },
+      "proj4text": {
+        "format": "character varying",
+        "maxLength": 2048,
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "official_docs": {
+    "required": [
+      "id",
+      "title"
+    ],
+    "properties": {
+      "id": {
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "text",
+        "type": "string"
+      },
+      "title": {
+        "format": "text",
+        "type": "string"
+      },
+      "docNumber": {
+        "format": "text",
+        "type": "string"
+      },
+      "category": {
+        "format": "text",
+        "type": "string"
+      },
+      "issuedDate": {
+        "format": "text",
+        "type": "string"
+      },
+      "department": {
+        "format": "text",
+        "type": "string"
+      },
+      "summary": {
+        "format": "text",
+        "type": "string"
+      },
+      "filename": {
+        "format": "text",
+        "type": "string"
+      },
+      "type": {
+        "default": "in",
+        "format": "text",
+        "type": "string"
+      },
+      "fileData": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "businesses": {
+    "required": [
+      "id",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "tax_code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "owner_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "address_id": {
+        "description": "Note:\nThis is a Foreign Key to `dia_chi_so.id`.<fk table='dia_chi_so' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "business_type_id": {
+        "description": "Note:\nThis is a Foreign Key to `business_types.id`.<fk table='business_types' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "employee_count": {
+        "default": 0,
+        "format": "integer",
+        "type": "integer"
+      },
+      "safety_certified": {
+        "default": false,
+        "format": "boolean",
+        "type": "boolean"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "inspections": {
+    "required": [
+      "id",
+      "inspector_name",
+      "inspection_date",
+      "result"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "business_id": {
+        "description": "Note:\nThis is a Foreign Key to `businesses.id`.<fk table='businesses' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "inspector_name": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "inspection_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "result": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "notes": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "org_categories": {
+    "required": [
+      "id",
+      "code",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "text",
+        "type": "string"
+      },
+      "code": {
+        "format": "text",
+        "type": "string"
+      },
+      "name": {
+        "format": "text",
+        "type": "string"
+      },
+      "icon": {
+        "format": "text",
+        "type": "string"
+      },
+      "color": {
+        "format": "text",
+        "type": "string"
+      },
+      "sort_order": {
+        "format": "integer",
+        "type": "integer"
+      },
+      "is_active": {
+        "default": true,
+        "format": "boolean",
+        "type": "boolean"
+      },
+      "created_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "vi_tri_gis": {
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "dia_chi_so_id": {
+        "description": "Note:\nThis is a Foreign Key to `dia_chi_so.id`.<fk table='dia_chi_so' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "geom": {
+        "format": "public.geometry(Point,4326)",
+        "type": "string"
+      },
+      "latitude": {
+        "format": "numeric",
+        "type": "number"
+      },
+      "longitude": {
+        "format": "numeric",
+        "type": "number"
+      }
+    },
+    "type": "object"
+  },
+  "officer_positions": {
+    "required": [
+      "id",
+      "position_name",
+      "start_date"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "officer_id": {
+        "description": "Note:\nThis is a Foreign Key to `officers.id`.<fk table='officers' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "position_name": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "chapters": {
+    "required": [
+      "id",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "organization_id": {
+        "description": "Note:\nThis is a Foreign Key to `organizations.id`.<fk table='organizations' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "leader_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "dia_chi_so": {
+    "required": [
+      "id",
+      "house_number",
+      "street_name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "house_number": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "street_name": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "ward": {
+        "default": "An Phú",
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "district": {
+        "default": "Thủ Đức",
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "city": {
+        "default": "Hồ Chí Minh",
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "to_dan_pho_id": {
+        "description": "Note:\nThis is a Foreign Key to `to_dan_pho.id`.<fk table='to_dan_pho' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "khu_vuc_id": {
+        "description": "Note:\nThis is a Foreign Key to `khu_vuc.id`.<fk table='khu_vuc' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "incidents": {
+    "required": [
+      "id",
+      "title",
+      "reporter_name",
+      "reporter_phone",
+      "description"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "category_id": {
+        "description": "Note:\nThis is a Foreign Key to `incident_categories.id`.<fk table='incident_categories' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "reporter_name": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "reporter_phone": {
+        "format": "character varying",
+        "maxLength": 20,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      },
+      "address_id": {
+        "description": "Note:\nThis is a Foreign Key to `dia_chi_so.id`.<fk table='dia_chi_so' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "geom": {
+        "format": "public.geometry(Point,4326)",
+        "type": "string"
+      },
+      "latitude": {
+        "format": "numeric",
+        "type": "number"
+      },
+      "longitude": {
+        "format": "numeric",
+        "type": "number"
+      },
+      "status_id": {
+        "description": "Note:\nThis is a Foreign Key to `incident_status.id`.<fk table='incident_status' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "before_image_url": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "after_image_url": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "citizens": {
+    "required": [
+      "id",
+      "citizen_code",
+      "full_name",
+      "date_of_birth",
+      "cccd"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "full_name": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "gender": {
+        "format": "character varying",
+        "maxLength": 10,
+        "type": "string"
+      },
+      "date_of_birth": {
+        "format": "date",
+        "type": "string"
+      },
+      "cccd": {
+        "format": "character varying",
+        "maxLength": 20,
+        "type": "string"
+      },
+      "phone": {
+        "format": "character varying",
+        "maxLength": 20,
+        "type": "string"
+      },
+      "email": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "household_id": {
+        "description": "Note:\nThis is a Foreign Key to `households.id`.<fk table='households' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "permanent_address": {
+        "format": "text",
+        "type": "string"
+      },
+      "temporary_address": {
+        "format": "text",
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "bhyt_code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "bhyt_expiry": {
+        "format": "date",
+        "type": "string"
+      },
+      "registration_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "residence_history": {
+    "required": [
+      "id",
+      "event_type"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "event_type": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      },
+      "event_date": {
+        "default": "CURRENT_DATE",
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "incident_processing": {
+    "required": [
+      "id",
+      "action_taken"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "incident_id": {
+        "description": "Note:\nThis is a Foreign Key to `incidents.id`.<fk table='incidents' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "processor_id": {
+        "description": "Note:\nThis is a Foreign Key to `officers.id`.<fk table='officers' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "action_taken": {
+        "format": "text",
+        "type": "string"
+      },
+      "processed_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      },
+      "notes": {
+        "format": "text",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "officer_tasks": {
+    "required": [
+      "id",
+      "title",
+      "deadline"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "officer_id": {
+        "description": "Note:\nThis is a Foreign Key to `officers.id`.<fk table='officers' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      },
+      "assigner_id": {
+        "description": "Note:\nThis is a Foreign Key to `officers.id`.<fk table='officers' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "deadline": {
+        "format": "date",
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "permissions": {
+    "required": [
+      "id",
+      "code",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "code": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "community_events": {
+    "required": [
+      "id",
+      "event_code",
+      "title",
+      "organizer",
+      "date_time",
+      "location"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "event_code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "title": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "organizer": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "date_time": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "location": {
+        "format": "character varying",
+        "maxLength": 255,
+        "type": "string"
+      },
+      "status": {
+        "default": "Sắp diễn ra",
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "expected_attendees": {
+        "default": 0,
+        "format": "integer",
+        "type": "integer"
+      },
+      "description": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "organization_members": {
+    "required": [
+      "id",
+      "join_date"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "chapter_id": {
+        "description": "Note:\nThis is a Foreign Key to `chapters.id`.<fk table='chapters' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "citizen_id": {
+        "description": "Note:\nThis is a Foreign Key to `citizens.id`.<fk table='citizens' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "join_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "status": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "to_dan_pho": {
+    "required": [
+      "id",
+      "code",
+      "name"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "code": {
+        "format": "character varying",
+        "maxLength": 50,
+        "type": "string"
+      },
+      "name": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "policy_changelogs": {
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "text",
+        "type": "string"
+      },
+      "user": {
+        "format": "text",
+        "type": "string"
+      },
+      "action": {
+        "format": "text",
+        "type": "string"
+      },
+      "time": {
+        "format": "text",
+        "type": "string"
+      },
+      "created_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      },
+      "updated_at": {
+        "default": "now()",
+        "format": "timestamp with time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "licenses": {
+    "required": [
+      "id",
+      "license_number",
+      "issue_date",
+      "license_type"
+    ],
+    "properties": {
+      "id": {
+        "default": "gen_random_uuid()",
+        "description": "Note:\nThis is a Primary Key.<pk/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "business_id": {
+        "description": "Note:\nThis is a Foreign Key to `businesses.id`.<fk table='businesses' column='id'/>",
+        "format": "uuid",
+        "type": "string"
+      },
+      "license_number": {
+        "format": "character varying",
+        "maxLength": 100,
+        "type": "string"
+      },
+      "issue_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "expire_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "license_type": {
+        "format": "character varying",
+        "maxLength": 150,
+        "type": "string"
+      },
+      "created_at": {
+        "default": "CURRENT_TIMESTAMP",
+        "format": "timestamp without time zone",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  }
+}

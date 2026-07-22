@@ -1,0 +1,550 @@
+=== Database ERD & Table Listing ===
+
+[household_members]
+  * id: string (uuid)
+  * household_id: string (uuid)
+  * citizen_id: string (uuid)
+  * relation_to_owner: string (character varying)
+  * joined_at: string (date)
+
+[users]
+  * id: string (uuid)
+  * username: string (character varying)
+  * email: string (character varying)
+  * password_hash: string (character varying)
+  * is_active: boolean (boolean)
+  * created_at: string (timestamp without time zone)
+
+[gis_points]
+  * id: string (text)
+  * title: string (text)
+  * lat: number (double precision)
+  * lng: number (double precision)
+  * type: string (text)
+  * icon: string (text)
+  * description: string (text)
+  * address: string (text)
+  * notes: string (text)
+  * status: string (text)
+  * image: string (text)
+  * is_deleted: boolean (boolean)
+  * created_by: string (text)
+  * created_at: string (timestamp with time zone)
+  * updated_by: string (text)
+  * updated_at: string (timestamp with time zone)
+
+[attachments]
+  * id: string (uuid)
+  * entity_type: string (character varying)
+  * entity_id: string (uuid)
+  * file_path: string (character varying)
+  * file_type: string (character varying)
+  * file_size: integer (integer)
+  * created_at: string (timestamp without time zone)
+
+[role_permissions]
+  * id: string (uuid)
+  * role_id: string (uuid)
+  * permission_id: string (uuid)
+
+[plans]
+  * id: string (text)
+  * title: string (text)
+  * deadline: string (text)
+  * status: string (text)
+  * aiContent: string (text)
+  * attachedFile: undefined (jsonb)
+  * created_at: string (timestamp with time zone)
+  * updated_at: string (timestamp with time zone)
+
+[temporary_residence]
+  * id: string (uuid)
+  * citizen_id: string (uuid)
+  * household_id: string (uuid)
+  * start_date: string (date)
+  * end_date: string (date)
+  * registration_number: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[boarding_rooms]
+  * id: string (uuid)
+  * boarding_house_id: string (uuid)
+  * room_number: string (character varying)
+  * price: number (numeric)
+  * max_tenants: integer (integer)
+  * status: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[officer_evaluations]
+  * id: string (uuid)
+  * officer_id: string (uuid)
+  * year: integer (integer)
+  * rating: string (character varying)
+  * achievements: string (text)
+  * feedback: string (text)
+  * created_at: string (timestamp without time zone)
+
+[fund_contributions]
+  * id: string (uuid)
+  * household_code: string (character varying)
+  * owner_name: string (character varying)
+  * fund_name: string (character varying)
+  * amount: number (numeric)
+  * status: string (character varying)
+  * paid_at: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[notifications]
+  * id: string (uuid)
+  * user_id: string (uuid)
+  * title: string (character varying)
+  * content: string (text)
+  * is_read: boolean (boolean)
+  * send_type: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[user_roles]
+  * id: string (uuid)
+  * user_id: string (uuid)
+  * role_id: string (uuid)
+
+[khu_vuc]
+  * id: string (uuid)
+  * name: string (character varying)
+  * description: string (text)
+
+[geometry_columns]
+  * f_table_catalog: string (character varying)
+  * f_table_schema: string (name)
+  * f_table_name: string (name)
+  * f_geometry_column: string (name)
+  * coord_dimension: integer (integer)
+  * srid: integer (integer)
+  * type: string (character varying)
+
+[residents]
+  * id: string (text)
+  * name: string (text)
+  * dob: string (text)
+  * gender: string (text)
+  * idCard: string (text)
+  * address: string (text)
+  * neighborhoodGroup: string (text)
+  * status: string (text)
+  * phone: string (text)
+  * occupation: string (text)
+  * note: string (text)
+  * classifications: undefined (jsonb)
+  * giftHistory: undefined (jsonb)
+  * householdId: string (text)
+  * partyJoinDate: string (text)
+  * partyOfficialDate: string (text)
+  * partyPosition: string (text)
+  * partyStatus: string (text)
+  * groupJoinDate: string (text)
+  * groupOfficialDate: string (text)
+  * groupPosition: string (text)
+  * groupStatus: string (text)
+  * created_at: string (timestamp with time zone)
+  * updated_at: string (timestamp with time zone)
+
+[local_news]
+  * id: string (uuid)
+  * news_code: string (character varying)
+  * title: string (character varying)
+  * category: string (character varying)
+  * published_date: string (date)
+  * author: string (character varying)
+  * content: string (text)
+  * is_pinned: boolean (boolean)
+  * created_at: string (timestamp without time zone)
+
+[party_meetings]
+  * id: string (uuid)
+  * title: string (character varying)
+  * date_time: string (timestamp without time zone)
+  * location: string (character varying)
+  * description: string (text)
+  * created_at: string (timestamp without time zone)
+
+[audit_logs]
+  * id: string (uuid)
+  * user_id: string (uuid)
+  * action: string (character varying)
+  * table_name: string (character varying)
+  * record_id: string (uuid)
+  * old_data: undefined (jsonb)
+  * new_data: undefined (jsonb)
+  * ip_address: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[households]
+  * id: string (uuid)
+  * household_code: string (character varying)
+  * owner_name: string (character varying)
+  * dia_chi_so_id: string (uuid)
+  * type: string (character varying)
+  * created_at: string (timestamp without time zone)
+  * updated_at: string (timestamp without time zone)
+
+[temporary_absence]
+  * id: string (uuid)
+  * citizen_id: string (uuid)
+  * leave_date: string (date)
+  * return_date: string (date)
+  * destination_address: string (text)
+  * reason: string (text)
+  * created_at: string (timestamp without time zone)
+
+[beneficiaries]
+  * id: string (uuid)
+  * citizen_id: string (uuid)
+  * category: string (character varying)
+  * base_allowance: number (numeric)
+  * status: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[party_assignments]
+  * id: string (uuid)
+  * party_member_id: string (uuid)
+  * task_description: string (text)
+  * start_date: string (date)
+  * end_date: string (date)
+  * status: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[incident_categories]
+  * id: string (uuid)
+  * code: string (character varying)
+  * name: string (character varying)
+  * description: string (text)
+
+[officers]
+  * id: string (uuid)
+  * citizen_id: string (uuid)
+  * officer_code: string (character varying)
+  * joining_date: string (date)
+  * status: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[organization_activities]
+  * id: string (uuid)
+  * chapter_id: string (uuid)
+  * title: string (character varying)
+  * activity_date: string (date)
+  * location: string (character varying)
+  * description: string (text)
+  * created_at: string (timestamp without time zone)
+
+[boarding_houses]
+  * id: string (uuid)
+  * name: string (character varying)
+  * owner_id: string (uuid)
+  * address_id: string (uuid)
+  * rooms_count: integer (integer)
+  * created_at: string (timestamp without time zone)
+
+[business_types]
+  * id: string (uuid)
+  * code: string (character varying)
+  * name: string (character varying)
+  * description: string (text)
+
+[meetings]
+  * id: string (text)
+  * title: string (text)
+  * dateTime: string (text)
+  * location: string (text)
+  * status: string (text)
+  * summary: string (text)
+  * aiSuggestions: string (text)
+  * created_at: string (timestamp with time zone)
+  * updated_at: string (timestamp with time zone)
+
+[geography_columns]
+  * f_table_catalog: string (name)
+  * f_table_schema: string (name)
+  * f_table_name: string (name)
+  * f_geography_column: string (name)
+  * coord_dimension: integer (integer)
+  * srid: integer (integer)
+  * type: string (text)
+
+[roles]
+  * id: string (uuid)
+  * name: string (character varying)
+  * description: string (text)
+
+[social_programs]
+  * id: string (uuid)
+  * title: string (character varying)
+  * sponsor: string (character varying)
+  * budget: number (numeric)
+  * description: string (text)
+  * created_at: string (timestamp without time zone)
+
+[party_resolutions]
+  * id: string (uuid)
+  * meeting_id: string (uuid)
+  * title: string (character varying)
+  * resolution_code: string (character varying)
+  * content: string (text)
+  * publish_date: string (date)
+  * created_at: string (timestamp without time zone)
+
+[support_records]
+  * id: string (uuid)
+  * beneficiary_id: string (uuid)
+  * program_id: string (uuid)
+  * receive_date: string (date)
+  * support_type: string (character varying)
+  * value: number (numeric)
+  * created_at: string (timestamp without time zone)
+
+[organizations]
+  * id: string (uuid)
+  * code: string (character varying)
+  * name: string (character varying)
+  * description: string (text)
+
+[system_health]
+  * id: string (uuid)
+  * last_ping: string (timestamp with time zone)
+  * status: string (character varying)
+  * created_at: string (timestamp with time zone)
+  * updated_at: string (timestamp with time zone)
+
+[party_members]
+  * id: string (uuid)
+  * citizen_id: string (uuid)
+  * card_number: string (character varying)
+  * position: string (character varying)
+  * join_date: string (date)
+  * cell_group: string (character varying)
+  * status: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[fund_expenditures]
+  * id: string (uuid)
+  * fund_name: string (character varying)
+  * title: string (character varying)
+  * amount: number (numeric)
+  * spent_at: string (character varying)
+  * receiver: string (character varying)
+  * evidence: string (character varying)
+  * approved_by: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[keepalive_logs]
+  * id: string (uuid)
+  * pinged_at: string (timestamp with time zone)
+  * status: string (character varying)
+  * response_time_ms: integer (integer)
+  * error_message: string (text)
+
+[incident_status]
+  * id: string (uuid)
+  * code: string (character varying)
+  * name: string (character varying)
+
+[tenants]
+  * id: string (uuid)
+  * room_id: string (uuid)
+  * citizen_id: string (uuid)
+  * rent_start_date: string (date)
+  * rent_end_date: string (date)
+  * status: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[spatial_ref_sys]
+  * srid: integer (integer)
+  * auth_name: string (character varying)
+  * auth_srid: integer (integer)
+  * srtext: string (character varying)
+  * proj4text: string (character varying)
+
+[official_docs]
+  * id: string (text)
+  * title: string (text)
+  * docNumber: string (text)
+  * category: string (text)
+  * issuedDate: string (text)
+  * department: string (text)
+  * summary: string (text)
+  * filename: string (text)
+  * type: string (text)
+  * fileData: string (text)
+  * created_at: string (timestamp with time zone)
+  * updated_at: string (timestamp with time zone)
+
+[businesses]
+  * id: string (uuid)
+  * name: string (character varying)
+  * tax_code: string (character varying)
+  * owner_id: string (uuid)
+  * address_id: string (uuid)
+  * business_type_id: string (uuid)
+  * status: string (character varying)
+  * employee_count: integer (integer)
+  * safety_certified: boolean (boolean)
+  * created_at: string (timestamp without time zone)
+
+[inspections]
+  * id: string (uuid)
+  * business_id: string (uuid)
+  * inspector_name: string (character varying)
+  * inspection_date: string (date)
+  * result: string (character varying)
+  * notes: string (text)
+  * created_at: string (timestamp without time zone)
+
+[org_categories]
+  * id: string (text)
+  * code: string (text)
+  * name: string (text)
+  * icon: string (text)
+  * color: string (text)
+  * sort_order: integer (integer)
+  * is_active: boolean (boolean)
+  * created_at: string (timestamp with time zone)
+  * updated_at: string (timestamp with time zone)
+
+[vi_tri_gis]
+  * id: string (uuid)
+  * dia_chi_so_id: string (uuid)
+  * geom: string (public.geometry(Point,4326))
+  * latitude: number (numeric)
+  * longitude: number (numeric)
+
+[officer_positions]
+  * id: string (uuid)
+  * officer_id: string (uuid)
+  * position_name: string (character varying)
+  * start_date: string (date)
+  * end_date: string (date)
+  * created_at: string (timestamp without time zone)
+
+[chapters]
+  * id: string (uuid)
+  * organization_id: string (uuid)
+  * name: string (character varying)
+  * leader_id: string (uuid)
+  * created_at: string (timestamp without time zone)
+
+[dia_chi_so]
+  * id: string (uuid)
+  * house_number: string (character varying)
+  * street_name: string (character varying)
+  * ward: string (character varying)
+  * district: string (character varying)
+  * city: string (character varying)
+  * to_dan_pho_id: string (uuid)
+  * khu_vuc_id: string (uuid)
+
+[incidents]
+  * id: string (uuid)
+  * title: string (character varying)
+  * category_id: string (uuid)
+  * reporter_name: string (character varying)
+  * reporter_phone: string (character varying)
+  * description: string (text)
+  * address_id: string (uuid)
+  * geom: string (public.geometry(Point,4326))
+  * latitude: number (numeric)
+  * longitude: number (numeric)
+  * status_id: string (uuid)
+  * before_image_url: string (character varying)
+  * after_image_url: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[citizens]
+  * id: string (uuid)
+  * citizen_code: string (character varying)
+  * full_name: string (character varying)
+  * gender: string (character varying)
+  * date_of_birth: string (date)
+  * cccd: string (character varying)
+  * phone: string (character varying)
+  * email: string (character varying)
+  * household_id: string (uuid)
+  * permanent_address: string (text)
+  * temporary_address: string (text)
+  * status: string (character varying)
+  * bhyt_code: string (character varying)
+  * bhyt_expiry: string (date)
+  * registration_date: string (date)
+  * created_at: string (timestamp without time zone)
+  * updated_at: string (timestamp without time zone)
+
+[residence_history]
+  * id: string (uuid)
+  * citizen_id: string (uuid)
+  * event_type: string (character varying)
+  * description: string (text)
+  * event_date: string (date)
+
+[incident_processing]
+  * id: string (uuid)
+  * incident_id: string (uuid)
+  * processor_id: string (uuid)
+  * action_taken: string (text)
+  * processed_at: string (timestamp without time zone)
+  * notes: string (text)
+
+[officer_tasks]
+  * id: string (uuid)
+  * officer_id: string (uuid)
+  * title: string (character varying)
+  * description: string (text)
+  * assigner_id: string (uuid)
+  * deadline: string (date)
+  * status: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[permissions]
+  * id: string (uuid)
+  * code: string (character varying)
+  * name: string (character varying)
+
+[community_events]
+  * id: string (uuid)
+  * event_code: string (character varying)
+  * title: string (character varying)
+  * organizer: string (character varying)
+  * date_time: string (character varying)
+  * location: string (character varying)
+  * status: string (character varying)
+  * expected_attendees: integer (integer)
+  * description: string (text)
+  * created_at: string (timestamp without time zone)
+
+[organization_members]
+  * id: string (uuid)
+  * chapter_id: string (uuid)
+  * citizen_id: string (uuid)
+  * join_date: string (date)
+  * status: string (character varying)
+  * created_at: string (timestamp without time zone)
+
+[to_dan_pho]
+  * id: string (uuid)
+  * code: string (character varying)
+  * name: string (character varying)
+
+[policy_changelogs]
+  * id: string (text)
+  * user: string (text)
+  * action: string (text)
+  * time: string (text)
+  * created_at: string (timestamp with time zone)
+  * updated_at: string (timestamp with time zone)
+
+[licenses]
+  * id: string (uuid)
+  * business_id: string (uuid)
+  * license_number: string (character varying)
+  * issue_date: string (date)
+  * expire_date: string (date)
+  * license_type: string (character varying)
+  * created_at: string (timestamp without time zone)
+
